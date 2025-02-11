@@ -1,0 +1,51 @@
+.vouchers-container {
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #2c2c2c;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.heading {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 2rem;
+    color: #ffffff;
+}
+
+.table-container {
+    width: 100%;
+    border-collapse: collapse;
+    overflow: hidden;
+    border-radius: 8px;
+}
+
+.table-container thead {
+    background: linear-gradient(135deg, #3b3b3b, #5a5a5a);
+}
+
+.table-container th,
+.table-container td {
+    padding: 16px 20px;
+    text-align: left;
+    border-bottom: 1px solid #444;
+}
+
+.table-container th {
+    font-weight: 600;
+    color: #ffffff;
+}
+
+.table-container tbody tr {
+    background-color: #2c2c2c;
+    transition: background-color 0.3s ease;
+}
+
+.table-container tbody tr:nth-child(even) {
+    background-color: #323232;
+}
+
+.table-container tbody tr:hover {
+    background-color: #3a3a3a;
+}
