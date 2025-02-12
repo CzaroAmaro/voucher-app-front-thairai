@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import { NavLink } from 'react-router-dom';
 import './Navbar.css';
 
@@ -15,6 +15,11 @@ const Navbar: React.FC<NavbarProps> = ({toggleDarkMode, darkMode}) => {
                 <li>
                     <NavLink to="/" className={({isActive}) => isActive ? 'active' : ''}>
                         Lista Voucherów
+                    </NavLink>
+                </li>
+                <li>
+                    <NavLink to="/add" className={({isActive}) => isActive ? 'active' : ''}>
+                        Dodaj Voucher
                     </NavLink>
                 </li>
             </ul>

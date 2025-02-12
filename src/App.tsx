@@ -3,6 +3,7 @@ import VoucherList from "./components/voucherList/VoucherList.tsx";
 import Navbar from "./components/navbar/Navbar.tsx";
 import {BrowserRouter, Routes, Route} from 'react-router-dom';
 import './App.css'
+import AddVoucher from "./components/AddVoucher/AddVoucher.tsx";
 
 const App: React.FC = () => {
     const [darkMode, setDarkMode] = useState(
@@ -25,6 +26,7 @@ const App: React.FC = () => {
                 <main className="main-content" dark-theme="dark">
                     <Routes>
                         <Route path="/" element={<VoucherList />} />
+                        <Route path="/add" element={<AddVoucher />} />
                     </Routes>
                 </main>
             </div>

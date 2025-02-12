@@ -1,0 +1,55 @@
+/* src/components/addVoucher/AddVoucher.css */
+.add-voucher-container {
+    max-width: 600px;
+    margin: 0 auto;
+    background-color: #2c2c2c;
+    padding: 20px;
+    border-radius: 8px;
+    color: #fff;
+}
+
+.add-voucher-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    margin-bottom: 5px;
+    display: block;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 8px;
+    border: none;
+    border-radius: 4px;
+}
+
+button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    background-color: #007bff;
+    color: #fff;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+.error {
+    color: #ff6b6b;
+    margin-top: 10px;
+}
+
+.response {
+    margin-top: 20px;
+    background-color: #3a3a3a;
+    padding: 10px;
+    border-radius: 4px;
+}
