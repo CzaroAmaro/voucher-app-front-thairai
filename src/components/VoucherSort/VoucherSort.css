@@ -1,0 +1,9 @@
+.sortable-header {
+    cursor: pointer;
+    user-select: none;
+    transition: color 0.3s ease;
+}
+
+.sortable-header:hover {
+    color: #f0f0f0;
+}

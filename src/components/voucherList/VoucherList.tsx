@@ -2,24 +2,14 @@ import React, { useEffect, useState } from "react";
 import "./VoucherList.css"
 import {getVouchers} from "../../services/voucherService.ts";
 import {Voucher} from "../../models/Voucher.ts";
-
-interface Voucher {
-    id: number;
-    voucherCode: string;
-    saleDate: Date;
-    paymentMethod: string;
-    amount: number;
-    realized: string;
-    realizedDate: Date | null;
-    note: string;
-    availableAmount: number;
-    validUntil: Date;
-}
+import VoucherSort from "../VoucherSort/VoucherSort.tsx";
 
 const VouchersList: React.FC = () => {
     const [vouchers, setVouchers] = useState<Voucher[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [sortColumn, setSortColumn] = useState<string>("id");
+    const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
     useEffect(() => {
         const loadVouchers = async () => {
@@ -37,6 +27,27 @@ const VouchersList: React.FC = () => {
         loadVouchers();
     }, []);
 
+    const handleSort = (column: string) => {
+        const isAsc = sortColumn === column && sortDirection === "asc";
+        const newDirection = isAsc ? "desc" : "asc";
+        setSortDirection(newDirection);
+        setSortColumn(column);
+
+        const sortedVouchers = [...vouchers].sort((a, b) => {
+            const aValue = a[column as keyof Voucher];
+            const bValue = b[column as keyof Voucher];
+
+            if (aValue === null || aValue === undefined) return 1;
+            if (bValue === null || bValue === undefined) return -1;
+
+            if (aValue < bValue) return newDirection === "asc" ? -1 : 1;
+            if (aValue > bValue) return newDirection === "asc" ? 1 : -1;
+            return 0;
+        });
+
+        setVouchers(sortedVouchers);
+    };
+
     if (loading) return <p>Ładowanie danych...</p>;
     if (error) return <p style={{ color: "red" }}>{error}</p>;
 
@@ -46,16 +57,76 @@ const VouchersList: React.FC = () => {
             <table className="table-container">
                 <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>Kod vouchera</th>
-                    <th>Data sprzedaży</th>
-                    <th>Metoda płatności</th>
-                    <th>Kwota</th>
-                    <th>Zrealizowany</th>
-                    <th>Data realizacji</th>
-                    <th>Notatka</th>
-                    <th>Pozostała kwota</th>
-                    <th>Ważny do</th>
+                    <VoucherSort
+                        column="id"
+                        label="ID"
+                        sortColumn={sortColumn}
+                        sortDirection={sortDirection}
+                        onSort={handleSort}
+                    />
+                    <VoucherSort
+                        column="voucherCode"
+                        label="Kod vouchera"
+                        sortColumn={sortColumn}
+                        sortDirection={sortDirection}
+                        onSort={handleSort}
+                    />
+                    <VoucherSort
+                        column="saleDate"
+                        label="Data sprzedaży"
+                        sortColumn={sortColumn}
+                        sortDirection={sortDirection}
+                        onSort={handleSort}
+                    />
+                    <VoucherSort
+                        column="paymentMethod"
+                        label="Metoda płatności"
+                        sortColumn={sortColumn}
+                        sortDirection={sortDirection}
+                        onSort={handleSort}
+                    />
+                    <VoucherSort
+                        column="amount"
+                        label="Kwota"
+                        sortColumn={sortColumn}
+                        sortDirection={sortDirection}
+                        onSort={handleSort}
+                    />
+                    <VoucherSort
+                        column="realized"
+                        label="Zrealizowany"
+                        sortColumn={sortColumn}
+                        sortDirection={sortDirection}
+                        onSort={handleSort}
+                    />
+                    <VoucherSort
+                        column="realizedDate"
+                        label="Data realizacji"
+                        sortColumn={sortColumn}
+                        sortDirection={sortDirection}
+                        onSort={handleSort}
+                    />
+                    <VoucherSort
+                        column="note"
+                        label="Notatka"
+                        sortColumn={sortColumn}
+                        sortDirection={sortDirection}
+                        onSort={handleSort}
+                    />
+                    <VoucherSort
+                        column="availableAmount"
+                        label="Pozostała kwota"
+                        sortColumn={sortColumn}
+                        sortDirection={sortDirection}
+                        onSort={handleSort}
+                    />
+                    <VoucherSort
+                        column="validUntil"
+                        label="Ważny do"
+                        sortColumn={sortColumn}
+                        sortDirection={sortDirection}
+                        onSort={handleSort}
+                    />
                 </tr>
                 </thead>
                 <tbody>
