@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import "./voucherList.css"
+import "./VoucherList.css"
 import {getVouchers} from "../../services/voucherService.ts";
 import {Voucher} from "../../models/Voucher.ts";
 
