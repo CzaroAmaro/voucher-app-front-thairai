@@ -2,10 +2,10 @@
 .add-voucher-container {
     max-width: 600px;
     margin: 0 auto;
-    background-color: #2c2c2c;
+    background-color: var(--background-color-2);
     padding: 20px;
     border-radius: 8px;
-    color: #fff;
+    color: var(--table-tr-color);
 }
 
 .add-voucher-form {
@@ -47,9 +47,3 @@ button:hover {
     margin-top: 10px;
 }
 
-.response {
-    margin-top: 20px;
-    background-color: #3a3a3a;
-    padding: 10px;
-    border-radius: 4px;
-}

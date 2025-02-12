@@ -8,13 +8,11 @@ const AddVoucher: React.FC = () => {
     const [amount, setAmount] = useState<number>(0);
     const [note, setNote] = useState("");
     const [howManyDaysAvailable, setHowManyDaysAvailable] = useState<number>(0);
-    const [successMessage, setSuccessMessage] = useState("");
     const [error, setError] = useState<string>("");
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError("");
-        setSuccessMessage("");
         try {
              await addVoucher({
                 paymentMethod,
@@ -22,7 +20,7 @@ const AddVoucher: React.FC = () => {
                 note,
                 howManyDaysAvailable,
             });
-            setSuccessMessage("Voucher dodany pomyślnie!")
+             window.alert("Voucher dodany pomyślnie!");
             setPaymentMethod("");
             setAmount(0);
             setNote("");
@@ -82,7 +80,6 @@ const AddVoucher: React.FC = () => {
             </form>
 
             {error && <p className="error">{error}</p>}
-            {successMessage && <p className="success">{successMessage}</p>}
         </div>
     );
 };
