@@ -72,6 +72,7 @@ const VouchersList: React.FC = () => {
     return (
         <div className="vouchers-container">
             <h2 className="heading">Lista Voucherów</h2>
+            <div className="table-wrapper">
             <table className="table-container">
                 <thead>
                 <tr>
@@ -168,12 +169,15 @@ const VouchersList: React.FC = () => {
                 ))}
                 </tbody>
             </table>
+            </div>
 
             {selectedVoucher && (
                 <VoucherModal
                     voucher={selectedVoucher}
                     onClose={closeModal}
                     onUpdate={updateVoucher}
+                    onDelete={(id: number) =>
+                setVouchers((prev) => prev.filter((v) => v.id !== id))}
                     />
             )}
         </div>

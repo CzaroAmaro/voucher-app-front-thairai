@@ -1,27 +1,16 @@
 import React, {useState} from 'react';
-import {realizeVoucher} from "../../services/voucherService.ts";
+import {deleteVoucher, realizeVoucher} from "../../services/voucherService.ts";
+import {Voucher} from "../../models/Voucher.ts";
 import "./VoucherModal.css";
-
-interface Voucher {
-    id: number | null;
-    voucherCode: string;
-    saleDate: string;
-    paymentMethod: string;
-    amount: number;
-    realized: string;
-    realizedDate: string | null;
-    note: string;
-    availableAmount: number;
-    validUntil: string;
-}
 
 interface VoucherModalProps {
     voucher: Voucher;
     onClose: () => void;
     onUpdate?: (updateVoucher: Voucher) => void;
+    onDelete?: (id: number) => void;
 }
 
-const VoucherModal: React.FC<VoucherModalProps> = ({voucher, onClose, onUpdate}) => {
+const VoucherModal: React.FC<VoucherModalProps> = ({voucher, onClose, onUpdate, onDelete}) => {
     const [amount, setAmount] = useState<number>(voucher.amount);
     const [error, setError] = useState<string>("");
 
@@ -38,6 +27,26 @@ const VoucherModal: React.FC<VoucherModalProps> = ({voucher, onClose, onUpdate})
         } catch (err) {
             console.error("Błąd przy realizacji vouchera:", err);
             setError("Wystąpił błąd podczas realizacji vouchera.");
+        }
+    };
+
+    const handleDelete = async () => {
+        if (voucher.id === null) {
+            setError("Voucher nie posiada id:");
+            return;
+        }
+        if (window.confirm("Czy na pewno chcesz usunąć voucher?")){
+            try{
+                await deleteVoucher(voucher.id);
+                if (onDelete){
+                    onDelete(voucher.id);
+                }
+                onClose();
+                window.alert("Voucher usunięty pomyślnie!");
+            }catch(err: any){
+                console.error("Błąd przy usuwaniu vouchera:", err);
+                setError("Wystąpił błąd podczas usuwania vouchera.");
+            }
         }
     };
     return (
@@ -62,6 +71,7 @@ const VoucherModal: React.FC<VoucherModalProps> = ({voucher, onClose, onUpdate})
                 <div className="modal-buttons">
                     <button type='submit'> Realizuj Voucher</button>
                     <button type="button" onClick={onClose}>Anuluj</button>
+                    <button type="button" onClick={handleDelete}>Usuń Voucher</button>
                 </div>
                 </form>
             </div>
