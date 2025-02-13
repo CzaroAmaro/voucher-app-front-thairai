@@ -14,3 +14,9 @@ export const addVoucher = (data:{
 }) => {
     return axios.post(`${baseURL}/vouchers`, data);
 };
+
+export const realizeVoucher = (code: string, amount: number) => {
+    return axios.patch(`${baseURL}/vouchers/use/${code}`, null,{
+        params: {ammount:amount},
+    });
+};

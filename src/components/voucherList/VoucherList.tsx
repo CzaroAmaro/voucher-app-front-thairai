@@ -3,6 +3,7 @@ import "./VoucherList.css"
 import {getVouchers} from "../../services/voucherService.ts";
 import {Voucher} from "../../models/Voucher.ts";
 import VoucherSort from "../VoucherSort/VoucherSort.tsx";
+import VoucherModal from "../VoucherModal/VoucherModal.tsx";
 
 const VouchersList: React.FC = () => {
     const [vouchers, setVouchers] = useState<Voucher[]>([]);
@@ -10,6 +11,7 @@ const VouchersList: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const [sortColumn, setSortColumn] = useState<string>("id");
     const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+    const [selectedVoucher, setSelectedVoucher] = useState<Voucher | null>(null);
 
     useEffect(() => {
         const loadVouchers = async () => {
@@ -26,6 +28,22 @@ const VouchersList: React.FC = () => {
 
         loadVouchers();
     }, []);
+
+    const handleRowClick = (voucher: Voucher) => {
+        setSelectedVoucher(voucher);
+    };
+
+    const closeModal = () => {
+        setSelectedVoucher(null);
+    };
+
+    const updateVoucher = (updatedVoucher: Voucher) => {
+        setVouchers((prev) =>
+        prev.map((v) =>
+        v.voucherCode === updatedVoucher.voucherCode ? updatedVoucher : v
+        )
+        );
+    };
 
     const handleSort = (column: string) => {
         const isAsc = sortColumn === column && sortDirection === "asc";
@@ -131,14 +149,18 @@ const VouchersList: React.FC = () => {
                 </thead>
                 <tbody>
                 {vouchers.map((voucher) => (
-                    <tr key={voucher.voucherCode}>
+                    <tr
+                        key={voucher.voucherCode}
+                        onClick={() => handleRowClick(voucher)}
+                        style={{ cursor: "pointer" }}
+                    >
                         <td>{voucher.id !== null ? voucher.id : "Brak"}</td>
                         <td>{voucher.voucherCode}</td>
                         <td>{new Date(voucher.saleDate).toLocaleDateString()}</td>
                         <td>{voucher.paymentMethod}</td>
                         <td>{voucher.amount} zł</td>
                         <td>{voucher.realized}</td>
-                        <td>{voucher.realizedDate}</td>
+                        <td>{voucher.realizedDate ? new Date(voucher.realizedDate).toLocaleDateString() : "Brak"}</td>
                         <td>{voucher.note}</td>
                         <td>{voucher.availableAmount} zł</td>
                         <td>{new Date(voucher.validUntil).toLocaleDateString()}</td>
@@ -146,6 +168,14 @@ const VouchersList: React.FC = () => {
                 ))}
                 </tbody>
             </table>
+
+            {selectedVoucher && (
+                <VoucherModal
+                    voucher={selectedVoucher}
+                    onClose={closeModal}
+                    onUpdate={updateVoucher}
+                    />
+            )}
         </div>
     );
 };
