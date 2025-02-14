@@ -61,7 +61,7 @@ const VouchersList: React.FC = () => {
         try {
             setLoading(true);
             const response = await getVoucherByPartOfCode(searchCode);
-            setVouchers([response.data]);
+            setVouchers(response.data);
             setError(null);
         } catch (err) {
             setError("Voucher o podanym kodzie nie został znaleziony");
