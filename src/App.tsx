@@ -4,6 +4,7 @@ import Navbar from "./components/navbar/Navbar.tsx";
 import {BrowserRouter, Routes, Route} from 'react-router-dom';
 import './App.css'
 import AddVoucher from "./components/AddVoucher/AddVoucher.tsx";
+import DeletedVoucher from "./components/DeletedVoucher/DeletedVoucher.tsx";
 
 const App: React.FC = () => {
     const [darkMode, setDarkMode] = useState(
@@ -27,6 +28,7 @@ const App: React.FC = () => {
                     <Routes>
                         <Route path="/" element={<VoucherList />} />
                         <Route path="/add" element={<AddVoucher />} />
+                        <Route path="/deleted" element={<DeletedVoucher />} />
                     </Routes>
                 </main>
             </div>

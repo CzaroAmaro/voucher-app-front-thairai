@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./VoucherList.css"
-import {getVouchers, getVoucherById, getVoucherByCode} from "../../services/voucherService.ts";
+import {getVouchers, getVoucherById, getVoucherByPartOfCode} from "../../services/voucherService.ts";
 import {Voucher} from "../../models/Voucher.ts";
 import VoucherSort from "../VoucherSort/VoucherSort.tsx";
 import VoucherModal from "../VoucherModal/VoucherModal.tsx";
@@ -60,7 +60,7 @@ const VouchersList: React.FC = () => {
         }
         try {
             setLoading(true);
-            const response = await getVoucherByCode(searchCode);
+            const response = await getVoucherByPartOfCode(searchCode);
             setVouchers([response.data]);
             setError(null);
         } catch (err) {

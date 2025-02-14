@@ -14,6 +14,10 @@ export const getVoucherByCode = (code: string) => {
     return axios.get(`${baseURL}/vouchers/by-code/${code}`);
 }
 
+export const getVoucherByPartOfCode = (code: string) => {
+    return axios.get(`${baseURL}/vouchers/by-part-of-code/${code}`);
+}
+
 export const getDeletedVoucher = () => {
     return axios.get(`${baseURL}/vouchers/deleted`);
 };
