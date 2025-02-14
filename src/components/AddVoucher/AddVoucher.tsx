@@ -1,4 +1,3 @@
-// src/components/addVoucher/AddVoucher.tsx
 import React, { useState } from "react";
 import { addVoucher } from "../../services/voucherService";
 import "./AddVoucher.css";
