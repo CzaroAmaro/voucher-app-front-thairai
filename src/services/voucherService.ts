@@ -6,6 +6,14 @@ export const getVouchers =  () => {
     return axios.get(`${baseURL}/vouchers`);
 };
 
+export const getVoucherById = (id: number) => {
+    return axios.get(`${baseURL}/vouchers/${id}`);
+};
+
+export const getVoucherByCode = (code: string) => {
+    return axios.get(`${baseURL}/vouchers/by-code/${code}`);
+}
+
 export const addVoucher = (data:{
     paymentMethod: string;
     amount: number;
