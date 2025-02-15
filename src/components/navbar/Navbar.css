@@ -2,7 +2,7 @@
 .navbar {
     background-color: var(--background-color-2);
     padding: 20px;
-    color: #fff;
+    color: var(--table-tr-color);
     height: 100vh;
 }
 
@@ -22,7 +22,7 @@
 }
 
 .navbar a {
-    color: #fff;
+    color: var(--table-tr-color);
     text-decoration: none;
     transition: color 0.3s ease;
 }
