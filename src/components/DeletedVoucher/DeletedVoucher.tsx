@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { getDeletedVoucher } from "../../services/voucherService";
 import "./DeletedVoucher.css";
+import {Voucher} from "../../models/Voucher.ts";
+import VoucherModal from "../VoucherModal/VoucherModal.tsx";
+import DeleteVoucherModal from "../DeleteVoucherModal/DeleteVoucherModal.tsx";
 
 interface DeletedVoucher {
     id: number;
@@ -17,6 +20,7 @@ const DeletedVoucher: React.FC = () => {
     const [vouchers, setVouchers] = useState<DeletedVoucher[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [selectedVoucher, setSelectedVoucher] = useState<Voucher | null>(null);
 
     useEffect(() => {
         const loadDeletedVouchers = async () => {
@@ -34,6 +38,14 @@ const DeletedVoucher: React.FC = () => {
 
         loadDeletedVouchers();
     }, []);
+
+    const handleRowClick = (voucher: Voucher) => {
+        setSelectedVoucher(voucher);
+    };
+
+    const closeModal = () => {
+        setSelectedVoucher(null);
+    };
 
     if (loading) return <p>Ładowanie usuniętych voucherów...</p>;
     if (error) return <p style={{ color: "red" }}>{error}</p>;
@@ -57,7 +69,10 @@ const DeletedVoucher: React.FC = () => {
                     </thead>
                     <tbody>
                     {vouchers.map((voucher) => (
-                        <tr key={voucher.voucherCode}>
+                        <tr key={voucher.voucherCode}
+                            onClick={() => handleRowClick(voucher)}
+                            style={{cursor: "pointer"}}
+                        >
                             <td>{voucher.id}</td>
                             <td>{voucher.voucherCode}</td>
                             <td>{new Date(voucher.saleDate).toLocaleDateString()}</td>
@@ -71,6 +86,14 @@ const DeletedVoucher: React.FC = () => {
                     </tbody>
                 </table>
             </div>
+            {selectedVoucher && (
+                <DeleteVoucherModal
+                    voucher={selectedVoucher}
+                    onClose={closeModal}
+                    onDelete={(id: number) =>
+                        setVouchers((prev) => prev.filter((v) => v.id !== id))}
+                />
+            )}
         </div>
     );
 };

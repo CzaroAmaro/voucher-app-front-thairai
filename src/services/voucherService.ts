@@ -40,3 +40,7 @@ export const realizeVoucher = (code: string, amount: number) => {
 export const deleteVoucher = (id:number, reason: string) => {
     return axios.delete(`${baseURL}/vouchers/${id}`, {data: reason});
 }
+
+export const deleteVoucherPermanently = (id:number) => {
+    return axios.delete(`${baseURL}/vouchers/delete-permanently/${id}`)
+}
