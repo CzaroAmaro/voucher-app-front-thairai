@@ -13,6 +13,7 @@ interface VoucherModalProps {
 const VoucherModal: React.FC<VoucherModalProps> = ({voucher, onClose, onUpdate, onDelete}) => {
     const [amount, setAmount] = useState<number>(voucher.amount);
     const [error, setError] = useState<string>("");
+    const [deleteReason, setDeleteReason] = useState<string>("");
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -31,13 +32,18 @@ const VoucherModal: React.FC<VoucherModalProps> = ({voucher, onClose, onUpdate, 
     };
 
     const handleDelete = async () => {
+        setError("");
+        if(!deleteReason.trim()){
+            setError("Proszę podać powód usunięcia.");
+            return;
+        }
         if (voucher.id === null) {
             setError("Voucher nie posiada id:");
             return;
         }
         if (window.confirm("Czy na pewno chcesz usunąć voucher?")){
             try{
-                await deleteVoucher(voucher.id);
+                await deleteVoucher(voucher.id, deleteReason);
                 if (onDelete){
                     onDelete(voucher.id);
                 }
@@ -66,6 +72,14 @@ const VoucherModal: React.FC<VoucherModalProps> = ({voucher, onClose, onUpdate, 
                     onChange={(e) => setAmount(Number(e.target.value))}
                     required
                     />
+                </div>
+                <div className="form-group">
+                    <label>Powód usunięcia:</label>
+                    <input
+                        type="text"
+                        value={deleteReason}
+                        onChange={(e) => setDeleteReason(e.target.value)}
+                        placeholder="Podaj powód usunięcia." />
                 </div>
                 {error && <p className="error">{error}</p>}
                 <div className="modal-buttons">

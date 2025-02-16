@@ -37,6 +37,6 @@ export const realizeVoucher = (code: string, amount: number) => {
     });
 };
 
-export const deleteVoucher = (id:number) => {
-    return axios.delete(`${baseURL}/vouchers/${id}`);
+export const deleteVoucher = (id:number, reason: string) => {
+    return axios.delete(`${baseURL}/vouchers/${id}`, {data: reason});
 }
