@@ -27,6 +27,11 @@ const Navbar: React.FC<NavbarProps> = ({toggleDarkMode, darkMode}) => {
                         Usunięte Vouchery
                     </NavLink>
                 </li>
+                <li>
+                    <NavLink to="/sent" className={({isActive}) => isActive ? 'active' : ''}>
+                        Wysłane vouchery
+                    </NavLink>
+                </li>
             </ul>
             <label className="theme-switch">
                 <input

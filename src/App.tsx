@@ -5,6 +5,7 @@ import {BrowserRouter, Routes, Route} from 'react-router-dom';
 import './App.css'
 import AddVoucher from "./components/AddVoucher/AddVoucher.tsx";
 import DeletedVoucher from "./components/DeletedVoucher/DeletedVoucher.tsx";
+import NotificationList from "./components/NotificationList/NotificationList.tsx";
 
 const App: React.FC = () => {
     const [darkMode, setDarkMode] = useState(
@@ -29,6 +30,7 @@ const App: React.FC = () => {
                         <Route path="/" element={<VoucherList />} />
                         <Route path="/add" element={<AddVoucher />} />
                         <Route path="/deleted" element={<DeletedVoucher />} />
+                        <Route path="/sent" element={<NotificationList />} />
                     </Routes>
                 </main>
             </div>
