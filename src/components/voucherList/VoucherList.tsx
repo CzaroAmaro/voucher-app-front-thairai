@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import "./VoucherList.css"
-import {getVouchers, getVoucherById, getVoucherByPartOfCode} from "../../services/voucherService.ts";
-import {Voucher} from "../../models/Voucher.ts";
-import VoucherSort from "../VoucherSort/VoucherSort.tsx";
-import VoucherModal from "../VoucherModal/VoucherModal.tsx";
+import "./VoucherList.css";
+import { getVouchers, getVoucherById, getVoucherByPartOfCode } from "../../services/voucherService";
+import { Voucher } from "../../models/Voucher";
+import VoucherSort from "../VoucherSort/VoucherSort";
+import VoucherModal from "../VoucherModal/VoucherModal";
 
 const VouchersList: React.FC = () => {
     const [vouchers, setVouchers] = useState<Voucher[]>([]);
@@ -12,8 +12,7 @@ const VouchersList: React.FC = () => {
     const [sortColumn, setSortColumn] = useState<string>("id");
     const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
     const [selectedVoucher, setSelectedVoucher] = useState<Voucher | null>(null);
-    const [searchId, setSearchId] = useState<string>("");
-    const [searchCode, setSearchCode] = useState<string>("");
+    const [searchTerm, setSearchTerm] = useState<string>("");
 
     useEffect(() => {
         loadVouchers();
@@ -35,40 +34,31 @@ const VouchersList: React.FC = () => {
 
     const handleSearch = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!searchId) {
+        if (!searchTerm) {
             loadVouchers();
             return;
         }
+        setLoading(true);
         try {
-            setLoading(true);
-            const response = await getVoucherById(Number(searchId));
-            setVouchers([response.data]);
+            if (/^\d+$/.test(searchTerm)) {
+                const response = await getVoucherById(Number(searchTerm));
+                setVouchers([response.data]);
+            } else {
+                const response = await getVoucherByPartOfCode(searchTerm);
+                setVouchers(response.data);
+            }
             setError(null);
         } catch (err) {
-            setError("Voucher o podanym ID nie został znaleziony");
+            setError("Voucher o podanym kryterium nie został znaleziony");
             console.error("Błąd wyszukiwania:", err);
         } finally {
             setLoading(false);
         }
     };
 
-    const handleSearchByCode = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!searchCode){
-            loadVouchers();
-            return;
-        }
-        try {
-            setLoading(true);
-            const response = await getVoucherByPartOfCode(searchCode);
-            setVouchers(response.data);
-            setError(null);
-        } catch (err) {
-            setError("Voucher o podanym kodzie nie został znaleziony");
-            console.error("Błąd wyszukiwania", err);
-        } finally {
-            setLoading(false);
-        }
+    const handleReset = () => {
+        setSearchTerm("");
+        loadVouchers();
     };
 
     const handleRowClick = (voucher: Voucher) => {
@@ -81,9 +71,9 @@ const VouchersList: React.FC = () => {
 
     const updateVoucher = (updatedVoucher: Voucher) => {
         setVouchers((prev) =>
-        prev.map((v) =>
-        v.voucherCode === updatedVoucher.voucherCode ? updatedVoucher : v
-        )
+            prev.map((v) =>
+                v.voucherCode === updatedVoucher.voucherCode ? updatedVoucher : v
+            )
         );
     };
 
@@ -115,28 +105,18 @@ const VouchersList: React.FC = () => {
         <div className="vouchers-container">
             <h2 className="heading">Lista Voucherów</h2>
             <form onSubmit={handleSearch} className="search-form">
-                <label htmlFor="search">Wyszukaj voucher po ID::</label>
-                <input
-                    id="search"
-                    type="number"
-                    value={searchId}
-                    onChange={(e) => setSearchId(e.target.value)}
-                    placeholder="Wpisz ID"
-                />
-                <button type="submit">Szukaj</button>
-            </form>
-            <form onSubmit={handleSearchByCode} className="search-form">
-                <label htmlFor="search">Wyszukaj voucher po kodzie::</label>
                 <input
                     id="search"
                     type="text"
-                    value={searchCode}
-                    onChange={(e) => setSearchCode(e.target.value)}
-                    placeholder="Wpisz kod"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    placeholder="Wpisz ID lub fragment kodu"
                 />
                 <button type="submit">Szukaj</button>
+                <button type="button" onClick={handleReset}>
+                    Resetuj
+                </button>
             </form>
-
             <div className="table-wrapper">
                 <table className="table-container">
                     <thead>
@@ -218,7 +198,7 @@ const VouchersList: React.FC = () => {
                         <tr
                             key={voucher.voucherCode}
                             onClick={() => handleRowClick(voucher)}
-                            style={{cursor: "pointer"}}
+                            style={{ cursor: "pointer" }}
                         >
                             <td>{voucher.id !== null ? voucher.id : "Brak"}</td>
                             <td>{voucher.voucherCode}</td>
@@ -242,7 +222,8 @@ const VouchersList: React.FC = () => {
                     onClose={closeModal}
                     onUpdate={updateVoucher}
                     onDelete={(id: number) =>
-                        setVouchers((prev) => prev.filter((v) => v.id !== id))}
+                        setVouchers((prev) => prev.filter((v) => v.id !== id))
+                    }
                 />
             )}
         </div>

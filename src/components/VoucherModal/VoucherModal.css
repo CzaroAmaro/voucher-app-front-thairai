@@ -12,7 +12,7 @@
 }
 
 .modal {
-    background: #fff;
+    background: var(--background-color-2);
     padding: 20px;
     border-radius: 8px;
     max-width: 400px;
@@ -33,6 +33,9 @@
     justify-content: flex-end;
     gap: 10px;
 }
+.modal-buttons button {
+    border-radius: 15px;
+}
 
 .error {
     color: red;
@@ -51,7 +54,8 @@
     font-size: 1rem;
     cursor: pointer;
     border-bottom: 2px solid transparent;
-    color: black;
+    color: var(--table-tr-color);
+    border-radius: 15px;
 }
 
 .modal-tabs button.active {
