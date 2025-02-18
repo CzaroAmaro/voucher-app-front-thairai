@@ -50,9 +50,12 @@ const AddVoucher: React.FC = () => {
                     <label>Kwota:</label>
                     <input
                         type="number"
-                        value={amount}
-                        onChange={(e) => setAmount(Number(e.target.value))}
+                        value={amount === 0 ? "" : amount}
+                        onChange={(e) =>
+                            setAmount(e.target.value === "" ? 0 : Number(e.target.value))
+                        }
                         required
+                        placeholder="Podaj kwotę"
                     />
                 </div>
                 <div className="form-group">
@@ -68,11 +71,14 @@ const AddVoucher: React.FC = () => {
                     <label>Ile dni voucher ma być dostępny:</label>
                     <input
                         type="number"
-                        value={howManyDaysAvailable}
+                        value={howManyDaysAvailable === 0 ? "" : howManyDaysAvailable}
                         onChange={(e) =>
-                            setHowManyDaysAvailable(Number(e.target.value))
+                            setHowManyDaysAvailable(
+                                e.target.value === "" ? 0 : Number(e.target.value)
+                            )
                         }
                         required
+                        placeholder="Podaj liczbę dni"
                     />
                 </div>
                 <button type="submit">Dodaj Voucher</button>

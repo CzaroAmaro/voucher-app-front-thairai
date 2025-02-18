@@ -9,7 +9,7 @@
 }
 .table-wrapper{
     overflow-y: auto;
-    max-height: 820px;
+    max-height: 760px;
 }
 
 
@@ -57,32 +57,6 @@
 
 .table-container tbody tr:hover {
     background-color: var(--table-list-hover-bg);
-}
-
-::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-}
-
-::-webkit-scrollbar-track {
-    background: #1e1e1e; /* Kolor tła */
-    border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb {
-    background: #1e1e1e;
-    border-radius: 10px;
-    transition: background 0.3s;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: #1e1e1e;
-}
-
-/* Dla Firefoksa */
-* {
-    scrollbar-width: thin;
-    scrollbar-color: #2c5ecd #1e1e1e;
 }
 
 .search-form {
