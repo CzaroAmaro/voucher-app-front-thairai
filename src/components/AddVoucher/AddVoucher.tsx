@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { addVoucher } from "../../services/voucherService";
+import {sendEmail} from "../../services/notificationService.ts";
 import "./AddVoucher.css";
 
 const AddVoucher: React.FC = () => {
@@ -7,23 +8,37 @@ const AddVoucher: React.FC = () => {
     const [amount, setAmount] = useState<number>(0);
     const [note, setNote] = useState("");
     const [howManyDaysAvailable, setHowManyDaysAvailable] = useState<number>(0);
+    const [email, setEmail] = useState("");
     const [error, setError] = useState<string>("");
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError("");
         try {
-             await addVoucher({
+             const response = await addVoucher({
                 paymentMethod,
                 amount,
                 note,
                 howManyDaysAvailable,
             });
-             window.alert("Voucher dodany pomyślnie!");
+             const newVoucher = response.data;
+            if(email.trim()){
+                try {
+                    const notifResponse = await sendEmail(newVoucher.voucherCode, email);
+                    window.alert(`Voucher dodany pomyślnie! ${notifResponse.data.message}`);
+                } catch (notifErr: any) {
+                    console.error("Błąd przy wysyłaniu wiadomości:", notifErr);
+                    window.alert("Voucher dodany, ale wysłanie wiadomości nie powiodło się.");
+                }
+            } else {
+                window.alert("Voucher dodany pomyślnie!");
+            }
+
             setPaymentMethod("");
             setAmount(0);
             setNote("");
             setHowManyDaysAvailable(0);
+            setEmail("");
         } catch (err) {
             console.error("Błąd przy dodawaniu vouchera:", err);
             setError("Wystąpił błąd podczas dodawania vouchera.");
@@ -80,6 +95,14 @@ const AddVoucher: React.FC = () => {
                         required
                         placeholder="Podaj liczbę dni"
                     />
+                </div>
+                <div className="form-group">
+                    <label>Email klienta:</label>
+                    <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="Podaj adres email"/>
                 </div>
                 <button type="submit">Dodaj Voucher</button>
             </form>
