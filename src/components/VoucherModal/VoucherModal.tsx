@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import {deleteVoucher, realizeVoucher} from "../../services/voucherService.ts";
 import {Voucher} from "../../models/Voucher.ts";
 import "./VoucherModal.css";
+import {sendEmail} from "../../services/notificationService.ts";
 
 interface VoucherModalProps {
     voucher: Voucher;
@@ -14,7 +15,8 @@ const VoucherModal: React.FC<VoucherModalProps> = ({voucher, onClose, onUpdate, 
     const [amount, setAmount] = useState<number>(voucher.amount);
     const [error, setError] = useState<string>("");
     const [deleteReason, setDeleteReason] = useState<string>("");
-    const [activeTab, setActiveTab] = useState<"realizacja" | "usuwanie" >("realizacja");
+    const [activeTab, setActiveTab] = useState<"realizacja" | "usuwanie" | "wysylka" >("realizacja");
+    const [emailAddress, setEmailAddress] = useState<string>("");
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -56,10 +58,26 @@ const VoucherModal: React.FC<VoucherModalProps> = ({voucher, onClose, onUpdate, 
             }
         }
     };
+
+    const handleSendEmail = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setError("");
+    if (!emailAddress.trim()){
+        setError("Proszę podać adres email.");
+        return;
+    }
+    try{
+        const response = await sendEmail(voucher.voucherCode, emailAddress);
+        window.alert(response.data.message || "Voucher wysłany pomyślnie!");
+        onClose();
+    } catch (err: any){
+        console.error("Błąd przy wysyłaniu vouchera:", err);
+        setError("Wystąpił błąd podczas usuwania vouchera.");
+     }
+    };
     return (
         <div className="voucher-modal">
             <div className="modal">
-                {/* Zakładki u góry modala */}
                 <div className="modal-tabs">
                     <button
                         className={activeTab === "realizacja" ? "active" : ""}
@@ -72,6 +90,12 @@ const VoucherModal: React.FC<VoucherModalProps> = ({voucher, onClose, onUpdate, 
                         onClick={() => setActiveTab("usuwanie")}
                     >
                         Usuwanie
+                    </button>
+                    <button
+                        className={activeTab === "wysylka" ? "active" : ""}
+                        onClick={() => setActiveTab("wysylka")}
+                    >
+                        Wysyłka
                     </button>
                 </div>
 
@@ -121,6 +145,29 @@ const VoucherModal: React.FC<VoucherModalProps> = ({voucher, onClose, onUpdate, 
                             <button type="button" onClick={onClose}>Anuluj</button>
                         </div>
                     </div>
+                )}
+                {activeTab === "wysylka" && (
+                    <form onSubmit={handleSendEmail}>
+                        <h2>Wysyłka Vouchera</h2>
+                        <div className="form-group">
+                            <label>Kod vouchera:</label>
+                            <input type="text" value={voucher.voucherCode} disabled />
+                        </div>
+                        <div className="form-group">
+                            <label>Adres Email:</label>
+                            <input
+                                type="email"
+                                value={emailAddress}
+                                onChange={(e) => setEmailAddress(e.target.value)}
+                                placeholder="Podaj Adres Email"
+                                required />
+                        </div>
+                        {error && <p className="error">{error}</p>}
+                        <div className="modal-buttons">
+                            <button type="submit">Wyślij Voucher</button>
+                            <button type="button" onClick={onClose}>Anuluj</button>
+                        </div>
+                    </form>
                 )}
             </div>
         </div>
