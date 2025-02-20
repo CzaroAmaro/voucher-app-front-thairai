@@ -34,11 +34,11 @@ const DeleteVoucherModal: React.FC<DeleteVoucherModalProps> = ({voucher, onClose
     return (
         <div className="voucher-modal">
             <div className="modal">
+                <button className="close-button" onClick={onClose}>X</button>
                 <h2>Usuń voucher na zawsze!</h2>
                     <div className="form-group">
                     {error && <p className="error">{error}</p>}
                     <div className="modal-buttons">
-                        <button type="button" onClick={onClose}>Anuluj</button>
                         <button type="button" onClick={handleDelete}>Usuń Voucher</button>
                     </div>
                     </div>

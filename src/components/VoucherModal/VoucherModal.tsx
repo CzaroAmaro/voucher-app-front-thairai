@@ -78,6 +78,7 @@ const VoucherModal: React.FC<VoucherModalProps> = ({voucher, onClose, onUpdate, 
     return (
         <div className="voucher-modal">
             <div className="modal">
+                <button className="close-button" onClick={onClose}>X</button>
                 <div className="modal-tabs">
                     <button
                         className={activeTab === "realizacja" ? "active" : ""}
@@ -118,7 +119,6 @@ const VoucherModal: React.FC<VoucherModalProps> = ({voucher, onClose, onUpdate, 
                         {error && <p className="error">{error}</p>}
                         <div className="modal-buttons">
                             <button type="submit">Realizuj Voucher</button>
-                            <button type="button" onClick={onClose}>Anuluj</button>
                         </div>
                     </form>
                 )}
@@ -142,7 +142,6 @@ const VoucherModal: React.FC<VoucherModalProps> = ({voucher, onClose, onUpdate, 
                         {error && <p className="error">{error}</p>}
                         <div className="modal-buttons">
                             <button type="button" onClick={handleDelete}>Usuń Voucher</button>
-                            <button type="button" onClick={onClose}>Anuluj</button>
                         </div>
                     </div>
                 )}
@@ -165,7 +164,6 @@ const VoucherModal: React.FC<VoucherModalProps> = ({voucher, onClose, onUpdate, 
                         {error && <p className="error">{error}</p>}
                         <div className="modal-buttons">
                             <button type="submit">Wyślij Voucher</button>
-                            <button type="button" onClick={onClose}>Anuluj</button>
                         </div>
                     </form>
                 )}
