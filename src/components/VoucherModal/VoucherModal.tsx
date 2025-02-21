@@ -19,9 +19,19 @@ const VoucherModal: React.FC<VoucherModalProps> = ({voucher, onClose, onUpdate, 
     const [activeTab, setActiveTab] = useState<"realizacja" | "usuwanie" | "wysylka" >("realizacja");
     const [emailAddress, setEmailAddress] = useState<string>("");
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleRealize = async (e: React.FormEvent) => {
         e.preventDefault();
         setError("");
+        const currentDate = new Date();
+        const validUntilDate = new Date(voucher.validUntil);
+        if (validUntilDate < currentDate) {
+            const proceed = window.confirm(
+                "Voucher jest przedawniony. Czy na pewno chcesz go zrealizować?"
+            );
+            if(!proceed){
+                return;
+            }
+        }
         try{
             const response = await realizeVoucher(voucher.voucherCode, amount);
             if (onUpdate) {
@@ -103,7 +113,7 @@ const VoucherModal: React.FC<VoucherModalProps> = ({voucher, onClose, onUpdate, 
                 </div>
 
                 {activeTab === "realizacja" && (
-                    <form onSubmit={handleSubmit}>
+                    <form onSubmit={handleRealize}>
                         <h2>Realizacja Vouchera</h2>
                         <div className="form-group">
                             <label>Kod vouchera:</label>

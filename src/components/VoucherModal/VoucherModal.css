@@ -71,4 +71,5 @@
     border: none;
     cursor: pointer;
     padding: 10px;
+    color: var(--table-tr-color);
 }
