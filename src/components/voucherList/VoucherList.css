@@ -17,7 +17,7 @@
     text-align: center;
     margin-bottom: 20px;
     font-size: 2rem;
-    color: #686868;
+    color: var(--table-list-head);
 }
 
 .table-container {
