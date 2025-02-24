@@ -44,6 +44,3 @@ export const deleteVoucher = (id:number, reason: string) => {
 export const deleteVoucherPermanently = (id:number) => {
     return axios.delete(`${baseURL}/delete-permanently/${id}`)
 }
-export const sendEmail = (voucherCode: string, email: string) => {
-    return axios.post(`${baseURL}/notification/send`, {voucherCode, email});
-};

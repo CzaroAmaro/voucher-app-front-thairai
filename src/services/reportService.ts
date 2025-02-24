@@ -8,3 +8,7 @@ export const getReport =  (month: number, year: number) => {
         responseType: "blob"
     });
 };
+
+export const generateReportList = (voucherID: number[]) => {
+    return axios.post(`${baseURL}/report-list`, voucherID);
+};
