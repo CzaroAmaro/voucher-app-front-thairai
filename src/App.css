@@ -3,11 +3,6 @@
   flex-direction: row;
 }
 
-.sidebar {
-  width: 200px;
-  background-color: var(--background-color);
-}
-
 .main-content {
   flex: 1;
   background-color: var(--background-color);

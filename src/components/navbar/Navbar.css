@@ -1,9 +1,17 @@
-/* components/Navbar.css */
 .navbar {
-    background-color: var(--background-color-2);
-    padding: 20px;
-    color: var(--table-tr-color);
+    background-color: #105dc5;
+    padding: 15px;
+    color: #e1e1e1;
     height: 100vh;
+    border-radius: 8px;
+    font-weight: bold;
+    box-sizing: border-box;
+    overflow: hidden; /* Ukrywa wszelkie przewijane treści */
+}
+.navbar {
+    /* pozostałe style */
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 .navbar h1 {
@@ -11,18 +19,17 @@
     font-size: 1.5rem;
 }
 
-.navbar ul {
+.navbar ul li {
+    width: 170px;
+    margin-bottom: 10px;
     list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.navbar li {
-    margin-bottom: 15px;
 }
 
 .navbar a {
-    color: var(--table-tr-color);
+    display: block;
+    text-align: left;
+    padding: 4px;
+    color: #e1e1e1;
     text-decoration: none;
     transition: color 0.3s ease;
 }
@@ -33,8 +40,19 @@
 
 .navbar a.active {
     font-weight: bold;
-    border-left: 4px solid #fff;
-    padding-left: 10px;
+    background-color: #06327a;
+    border-radius: 8px;
+}
+
+.navbar a.active::before {
+    position: absolute;
+    top: -4px;
+    bottom: -4px;
+    left: -8px;
+    right: -8px;
+    background-color: #0b0bd8;
+    border-radius: 4px;
+    z-index: -1;
 }
 
 .theme-switch input {

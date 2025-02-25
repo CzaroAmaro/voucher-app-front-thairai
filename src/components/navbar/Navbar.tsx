@@ -14,32 +14,32 @@ const Navbar: React.FC<NavbarProps> = ({toggleDarkMode, darkMode}) => {
             <ul>
                 <li>
                     <NavLink to="/" className={({isActive}) => isActive ? 'active' : ''}>
-                        Lista Voucherów
+                        🏠︎ Home
                     </NavLink>
                 </li>
                 <li>
                     <NavLink to="/add" className={({isActive}) => isActive ? 'active' : ''}>
-                        Dodaj Voucher
+                        ✚ Dodaj
                     </NavLink>
                 </li>
                 <li>
                     <NavLink to="/deleted" className={({isActive}) => isActive ? 'active' : ''}>
-                        Usunięte Vouchery
+                        🗑 Usunięte
                     </NavLink>
                 </li>
                 <li>
                     <NavLink to="/sent" className={({isActive}) => isActive ? 'active' : ''}>
-                        Wysłane vouchery
+                        ✉︎ Wysłane
                     </NavLink>
                 </li>
                 <li>
                     <NavLink to="/report" className={({isActive}) => isActive ? 'active' : ''}>
-                        Generuj raport
+                        🗐 Generuj raport
                     </NavLink>
                 </li>
                 <li>
                     <NavLink to="/custom-report" className={({isActive}) => isActive ? 'active' : ''}>
-                        Własny raport
+                        🗐 Własny raport
                     </NavLink>
                 </li>
             </ul>
