@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { addVoucher } from "../../services/voucherService";
-import {sendEmail} from "../../services/notificationService.ts";
+import { sendEmail } from "../../services/notificationService.ts";
 import "./AddVoucher.css";
 
 const AddVoucher: React.FC = () => {
@@ -15,14 +15,15 @@ const AddVoucher: React.FC = () => {
         e.preventDefault();
         setError("");
         try {
-             const response = await addVoucher({
+            const response = await addVoucher({
                 paymentMethod,
                 amount,
                 note,
                 howManyDaysAvailable,
             });
-             const newVoucher = response.data;
-            if(email.trim()){
+            const newVoucher = response.data;
+
+            if (email.trim()) {
                 try {
                     const notifResponse = await sendEmail(newVoucher.voucherCode, email);
                     window.alert(`Voucher dodany pomyślnie! ${notifResponse.data.message}`);
@@ -34,6 +35,7 @@ const AddVoucher: React.FC = () => {
                 window.alert("Voucher dodany pomyślnie!");
             }
 
+            // Resetowanie pól formularza
             setPaymentMethod("");
             setAmount(0);
             setNote("");
@@ -55,14 +57,15 @@ const AddVoucher: React.FC = () => {
                         value={paymentMethod}
                         onChange={(e) => setPaymentMethod(e.target.value)}
                         required
-                        >
+                    >
                         <option value="">Wybierz metodę</option>
                         <option value="Blik">Blik</option>
                         <option value="Gotówka">Gotówka</option>
                     </select>
                 </div>
+
                 <div className="form-group">
-                    <label>Kwota:</label>
+                    <label>Kwota</label>
                     <input
                         type="number"
                         value={amount === 0 ? "" : amount}
@@ -73,17 +76,20 @@ const AddVoucher: React.FC = () => {
                         placeholder="Podaj kwotę"
                     />
                 </div>
+
                 <div className="form-group">
-                    <label>Notatka:</label>
+                    <label>Notatka</label>
                     <input
                         type="text"
                         value={note}
                         onChange={(e) => setNote(e.target.value)}
                         required
+                        placeholder="Dodaj krótką notatkę"
                     />
                 </div>
+
                 <div className="form-group">
-                    <label>Ile dni voucher ma być dostępny:</label>
+                    <label>Ile dni voucher ma być dostępny</label>
                     <input
                         type="number"
                         value={howManyDaysAvailable === 0 ? "" : howManyDaysAvailable}
@@ -96,14 +102,17 @@ const AddVoucher: React.FC = () => {
                         placeholder="Podaj liczbę dni"
                     />
                 </div>
+
                 <div className="form-group">
-                    <label>Email klienta:</label>
+                    <label>Email klienta</label>
                     <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Podaj adres email"/>
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="Podaj adres email"
+                    />
                 </div>
+
                 <button type="submit">Dodaj Voucher</button>
             </form>
 

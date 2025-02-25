@@ -1,6 +1,5 @@
-/* src/components/addVoucher/AddVoucher.css */
 .add-voucher-container {
-    max-width: 600px;
+    max-width: 1300px;
     margin: 0 auto;
     background-color: var(--background-color-2);
     padding: 20px;
@@ -9,12 +8,16 @@
 }
 
 .add-voucher-form {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 20px;
+    row-gap: 20px;
+    margin-top: 20px;
 }
 
 .form-group {
-    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
 }
 
 .form-group label {
@@ -22,41 +25,45 @@
     display: block;
 }
 
-.form-group input {
+.form-group input,
+.form-group select {
     width: 100%;
-    padding: 8px;
+    padding: 10px;
     border: none;
-    border-radius: 4px;
+    border-radius: 12px;
+    font-size: 1rem;
 }
 
-button {
+.add-voucher-form button {
+    grid-column: 1 / -1;
+    justify-self: center;
     padding: 10px 15px;
     border: none;
     border-radius: 15px;
     background-color: #007bff;
     color: #fff;
     cursor: pointer;
-
+    font-size: 15px;
+    transition: background-color 0.3s ease;
 }
 
-button:hover {
+.add-voucher-form button:hover {
     background-color: #0056b3;
 }
 
+/* Komunikat o błędzie */
 .error {
+    grid-column: 1 / -1;
     color: #ff6b6b;
     margin-top: 10px;
+    text-align: center;
 }
 
+/* Stylowanie selecta (dostosowane kolory) */
 .add-voucher-form .form-group select {
-    width: 100%;
-    padding: 10px 15px;
-    font-size: 1rem;
-    color: #fff;
     background-color: #2c2c2c;
+    color: #fff;
     border: 1px solid #444;
-    border-radius: 4px;
-    transition: border-color 0.3s ease, background-color 0.3s ease;
 }
 
 .add-voucher-form .form-group select:focus {
@@ -64,4 +71,3 @@ button:hover {
     border-color: #007bff;
     background-color: #3a3a3a;
 }
-
