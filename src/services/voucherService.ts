@@ -21,6 +21,11 @@ export const getVoucherByPartOfCode = (code: string) => {
 export const getDeletedVoucher = () => {
     return axios.get(`${baseURL}/deleted`);
 };
+export const getVoucherByMonthAndYear = (month: number, year: number) => {
+    return axios.get(`${baseURL}/by-year-and-month`, {
+        params: { month, year },
+    });
+};
 
 export const addVoucher = (data:{
     paymentMethod: string;

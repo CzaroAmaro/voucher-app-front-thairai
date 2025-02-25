@@ -7,6 +7,7 @@ import AddVoucher from "./components/AddVoucher/AddVoucher.tsx";
 import DeletedVoucher from "./components/DeletedVoucher/DeletedVoucher.tsx";
 import NotificationList from "./components/NotificationList/NotificationList.tsx";
 import ReportGenerator from "./components/ReportGenerator/ReportGenerator.tsx";
+import ReportListGenerator from "./components/ReportListGenerator/ReportListGenerator.tsx";
 
 const App: React.FC = () => {
     const [darkMode, setDarkMode] = useState(
@@ -33,6 +34,7 @@ const App: React.FC = () => {
                         <Route path="/deleted" element={<DeletedVoucher />} />
                         <Route path="/sent" element={<NotificationList />} />
                         <Route path="/report" element={<ReportGenerator />} />
+                        <Route path="/custom-report" element={<ReportListGenerator />} />
                     </Routes>
                 </main>
             </div>

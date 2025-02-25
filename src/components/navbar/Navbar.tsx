@@ -37,6 +37,11 @@ const Navbar: React.FC<NavbarProps> = ({toggleDarkMode, darkMode}) => {
                         Generuj raport
                     </NavLink>
                 </li>
+                <li>
+                    <NavLink to="/custom-report" className={({isActive}) => isActive ? 'active' : ''}>
+                        Własny raport
+                    </NavLink>
+                </li>
             </ul>
             <label className="theme-switch">
                 <input
