@@ -6,10 +6,9 @@
     border-radius: 8px;
     font-weight: bold;
     box-sizing: border-box;
-    overflow: hidden; /* Ukrywa wszelkie przewijane treści */
+    overflow: hidden;
 }
 .navbar {
-    /* pozostałe style */
     overflow-x: hidden;
     overflow-y: auto;
 }
@@ -50,7 +49,7 @@
     bottom: -4px;
     left: -8px;
     right: -8px;
-    background-color: #0b0bd8;
+    background-color: #0b0b13;
     border-radius: 4px;
     z-index: -1;
 }
@@ -59,7 +58,6 @@
     display: none;
 }
 
-/* Kontener przełącznika */
 .theme-switch {
     position: relative;
     display: inline-block;
@@ -67,7 +65,6 @@
     height: 24px;
 }
 
-/* Styl suwaka */
 .slider {
     position: absolute;
     cursor: pointer;
@@ -80,7 +77,6 @@
     border-radius: 34px;
 }
 
-/* Kropka wewnątrz suwaka */
 .slider::before {
     position: absolute;
     content: "";
@@ -93,7 +89,6 @@
     border-radius: 50%;
 }
 
-/* Stan włączony */
 input:checked + .slider {
     background-color: var(--toggle-bg);
 }

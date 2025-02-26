@@ -1,6 +1,7 @@
 .app-container {
   display: flex;
   flex-direction: row;
+  background-color: var(--background-color-2);
 }
 
 .main-content {
