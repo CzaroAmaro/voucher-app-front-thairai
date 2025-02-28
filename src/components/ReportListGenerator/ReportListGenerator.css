@@ -14,7 +14,6 @@
     font-size: 1.5rem;
 }
 
-/* Formularz pobierania voucherów */
 .fetch-form {
     display: flex;
     flex-wrap: wrap;
@@ -37,7 +36,6 @@
 .form-group input,
 .form-group select {
     padding: 10px;
-    border: 1px solid #ddd;
     border-radius: 6px;
     font-size: 1rem;
     box-sizing: border-box;
@@ -50,7 +48,6 @@
     border-color: #007bff;
 }
 
-/* Przycisk do pobierania voucherów */
 .fetch-form button {
     padding: 10px 20px;
     background-color: #007bff;
@@ -68,14 +65,12 @@
     background-color: #0056b3;
 }
 
-/* Komunikaty o błędach */
 .error {
     color: #ff6b6b;
     text-align: center;
     margin: 10px 0;
 }
 
-/* Lista voucherów */
 .voucher-list {
     margin-top: 20px;
 }
@@ -115,7 +110,6 @@
     transform: scale(1.2);
 }
 
-/* Przycisk generowania raportu */
 .voucher-list button {
     padding: 10px 20px;
     background-color: #007bff;
@@ -132,7 +126,6 @@
     background-color: #0056b3;
 }
 
-/* Link do pobrania raportu PDF */
 .report-link {
     margin-top: 20px;
     text-align: center;
