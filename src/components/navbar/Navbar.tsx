@@ -1,47 +1,45 @@
-import React from 'react';
-import { NavLink } from 'react-router-dom';
-import './Navbar.css';
+import React from "react";
+import { Link } from "react-router-dom";
+import "./Navbar.css";
 
 interface NavbarProps {
     toggleDarkMode: () => void;
     darkMode: boolean;
+    isLoggedIn: boolean;
 }
 
-const Navbar: React.FC<NavbarProps> = ({toggleDarkMode, darkMode}) => {
+const Navbar: React.FC<NavbarProps> = ({ toggleDarkMode, darkMode, isLoggedIn }) => {
     return (
         <nav className="navbar">
-            <h1>Voucher App</h1>
+            <h1>Voucher app</h1>
             <ul>
                 <li>
-                    <NavLink to="/" className={({isActive}) => isActive ? 'active' : ''}>
-                        🏠︎ Home
-                    </NavLink>
+                    <Link to="/add">✚ Dodaj</Link>
                 </li>
-                <li>
-                    <NavLink to="/add" className={({isActive}) => isActive ? 'active' : ''}>
-                        ✚ Dodaj
-                    </NavLink>
-                </li>
-                <li>
-                    <NavLink to="/deleted" className={({isActive}) => isActive ? 'active' : ''}>
-                        🗑 Usunięte
-                    </NavLink>
-                </li>
-                <li>
-                    <NavLink to="/sent" className={({isActive}) => isActive ? 'active' : ''}>
-                        ✉︎ Wysłane
-                    </NavLink>
-                </li>
-                <li>
-                    <NavLink to="/report" className={({isActive}) => isActive ? 'active' : ''}>
-                        🗐 Generuj raport
-                    </NavLink>
-                </li>
-                <li>
-                    <NavLink to="/custom-report" className={({isActive}) => isActive ? 'active' : ''}>
-                        🗐 Własny raport
-                    </NavLink>
-                </li>
+                {!isLoggedIn && (
+                    <li>
+                        <Link to="/login">Logowanie</Link>
+                    </li>
+                )}
+                {isLoggedIn && (
+                    <>
+                        <li>
+                            <Link to="/">🏠︎ Home</Link>
+                        </li>
+                        <li>
+                            <Link to="/deleted">🗑 Usunięte</Link>
+                        </li>
+                        <li>
+                            <Link to="/sent">✉ Wysłane</Link>
+                        </li>
+                        <li>
+                            <Link to="/report">🗐 Generuj raport</Link>
+                        </li>
+                        <li>
+                            <Link to="/custom-report">🗐 Własny raport</Link>
+                        </li>
+                    </>
+                )}
             </ul>
             <label className="theme-switch">
                 <input
