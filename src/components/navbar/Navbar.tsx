@@ -13,18 +13,27 @@ const Navbar: React.FC<NavbarProps> = ({ toggleDarkMode, darkMode, isLoggedIn })
         <nav className="navbar">
             <h1>Voucher app</h1>
             <ul>
-                <li>
-                    <Link to="/add">✚ Dodaj</Link>
-                </li>
                 {!isLoggedIn && (
-                    <li>
-                        <Link to="/login">Logowanie</Link>
-                    </li>
+                    <>
+                        <li>
+                            <Link to="/add-realize">✚ Dodaj i Realizuj</Link>
+                        </li>
+                        <li>
+                            <Link to="/login">
+                                <button className="hidden-login-button" aria-label="Logowanie">
+                                    Logowanie
+                                </button>
+                            </Link>
+                        </li>
+                    </>
                 )}
                 {isLoggedIn && (
                     <>
                         <li>
                             <Link to="/">🏠︎ Home</Link>
+                        </li>
+                        <li>
+                            <Link to="/add">✚ Dodaj</Link>
                         </li>
                         <li>
                             <Link to="/deleted">🗑 Usunięte</Link>
@@ -42,7 +51,7 @@ const Navbar: React.FC<NavbarProps> = ({ toggleDarkMode, darkMode, isLoggedIn })
                 )}
             </ul>
             <label className="theme-switch">
-                <input
+            <input
                     type="checkbox"
                     checked={darkMode}
                     onChange={toggleDarkMode}

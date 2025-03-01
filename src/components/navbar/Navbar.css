@@ -97,3 +97,14 @@ input:checked + .slider::before {
     transform: translateX(26px);
 }
 
+.hidden-login-button {
+    background-color: #105dc5;
+    width: 150px;
+    height: 40px;
+    border: none;
+    border-radius: 6px;
+    text-indent: -9999px; /* Przenosi tekst poza widoczny obszar */
+    overflow: hidden;
+    cursor: pointer;
+}
+

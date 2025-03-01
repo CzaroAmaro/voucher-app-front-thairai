@@ -9,6 +9,7 @@ import ReportGenerator from "./components/ReportGenerator/ReportGenerator.tsx";
 import ReportListGenerator from "./components/ReportListGenerator/ReportListGenerator.tsx";
 import Login from "./components/Login/Login.tsx";
 import "./App.css";
+import AddRealizeVoucher from "./components/AddRealizeVoucher/AddRealizeVoucher.tsx";
 
 const App: React.FC = () => {
     const [darkMode, setDarkMode] = useState(
@@ -33,12 +34,13 @@ const App: React.FC = () => {
                 </aside>
                 <main className="main-content">
                     <Routes>
-                        <Route path="/add" element={<AddVoucher />} />
+                        <Route path="/add-realize" element={<AddRealizeVoucher/>} />
                         <Route path="/login" element={<Login onLogin={() => setIsLoggedIn(true)} />} />
 
                         {isLoggedIn && (
                             <>
                                 <Route path="/" element={<VoucherList />} />
+                                <Route path="/add" element={<AddVoucher />} />
                                 <Route path="/deleted" element={<DeletedVoucher />} />
                                 <Route path="/sent" element={<NotificationList />} />
                                 <Route path="/report" element={<ReportGenerator />} />

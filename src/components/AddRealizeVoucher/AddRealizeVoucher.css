@@ -1,0 +1,137 @@
+.search-voucher-section {
+    max-width: 1580px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: var(--background-color-2);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    margin-top: 30px;
+}
+
+.search-voucher-section h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 2rem;
+    color: var(--table-list-head);
+}
+
+.search-form {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.search-form input {
+    padding: 5px 10px;
+    margin-right: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.search-form button {
+    padding: 8px 20px;
+    border: none;
+    background-color: #007bff;
+    color: #fff;
+    cursor: pointer;
+    border-radius: 15px;
+    transition: background-color 0.3s ease;
+}
+
+.search-form button:hover {
+    background-color: #0056b3;
+}
+
+.voucher-table {
+    width: 100%;
+    border-collapse: collapse;
+    overflow: hidden;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+
+.voucher-table thead {
+    background: var(--table-list-head);
+}
+
+.voucher-table th,
+.voucher-table td {
+    padding: 16px 20px;
+    text-align: left;
+    border-bottom: 1px solid var(--table-list-border);
+}
+
+.voucher-table th {
+    font-weight: 600;
+    color: #ffffff;
+}
+
+.voucher-table tbody tr {
+    color: var(--table-tr-color);
+    background-color: var(--table-list-dark-bg);
+    transition: background-color 0.3s ease;
+}
+
+.voucher-table tbody tr:nth-child(even) {
+    background-color: var(--table-list-light-bg);
+}
+
+.voucher-table tbody tr:hover {
+    background-color: var(--table-list-hover-bg);
+}
+
+.voucher-table input[type="number"] {
+    width: 80px;
+    padding: 5px;
+    border: 1px solid var(--table-list-border);
+    border-radius: 4px;
+}
+
+.voucher-table button {
+    padding: 8px 15px;
+    background-color: #007bff;
+    border: none;
+    border-radius: 15px;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.voucher-table button:hover {
+    background-color: #0b408f;
+}
+.voucher-form {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.voucher-form input[type="text"] {
+    flex: 1;
+    padding: 8px 12px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    transition: border-color 0.3s ease;
+}
+
+.voucher-form input[type="text"]:focus {
+    outline: none;
+    border-color: var(--foreground-color);
+}
+
+.voucher-form button {
+    padding: 8px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 15px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.voucher-form button:hover {
+    background-color: #0056b3;
+}
