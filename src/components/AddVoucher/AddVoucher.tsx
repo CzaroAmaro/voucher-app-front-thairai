@@ -10,6 +10,7 @@ const AddVoucher: React.FC = () => {
     const [howManyDaysAvailable, setHowManyDaysAvailable] = useState<number>(0);
     const [place, setPlace] = useState<string>("");
     const [email, setEmail] = useState("");
+    const [userName, setUserName] = useState("");
     const [error, setError] = useState<string>("");
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -27,7 +28,7 @@ const AddVoucher: React.FC = () => {
 
             if (email.trim()) {
                 try {
-                    const notifResponse = await sendEmail(newVoucher.voucherCode, email);
+                    const notifResponse = await sendEmail(newVoucher.voucherCode, email, userName);
                     window.alert(`Voucher dodany pomyślnie! ${notifResponse.data.message}`);
                 } catch (notifErr: any) {
                     console.error("Błąd przy wysyłaniu wiadomości:", notifErr);
@@ -43,6 +44,7 @@ const AddVoucher: React.FC = () => {
             setNote("");
             setHowManyDaysAvailable(0);
             setEmail("");
+            setUserName("");
         } catch (err) {
             console.error("Błąd przy dodawaniu vouchera:", err);
             setError("Wystąpił błąd podczas dodawania vouchera.");
@@ -125,6 +127,16 @@ const AddVoucher: React.FC = () => {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="Podaj adres email"
+                    />
+                </div>
+
+                <div className="form-group">
+                    <label>Dla kogo</label>
+                    <input
+                        type="text"
+                        value={userName}
+                        onChange={(e) => setUserName(e.target.value)}
+                        placeholder="Podaj dla kogo ma być wystawiony voucher"
                     />
                 </div>
 

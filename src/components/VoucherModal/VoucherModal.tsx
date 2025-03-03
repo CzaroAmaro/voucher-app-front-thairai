@@ -18,6 +18,7 @@ const VoucherModal: React.FC<VoucherModalProps> = ({voucher, onClose, onUpdate, 
     const [customDeleteReason, setCustomDeleteReason] = useState<string>("");
     const [activeTab, setActiveTab] = useState<"realizacja" | "usuwanie" | "wysylka" >("realizacja");
     const [emailAddress, setEmailAddress] = useState<string>("");
+    const [userName, setUserName] = useState<string>("");
 
     const handleRealize = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -79,7 +80,7 @@ const VoucherModal: React.FC<VoucherModalProps> = ({voucher, onClose, onUpdate, 
         return;
     }
     try{
-        const response = await sendEmail(voucher.voucherCode, emailAddress);
+        const response = await sendEmail(voucher.voucherCode, emailAddress, userName);
         window.alert(response.data.message || "Voucher wysłany pomyślnie!");
         onClose();
     } catch (err: any){
@@ -178,7 +179,7 @@ const VoucherModal: React.FC<VoucherModalProps> = ({voucher, onClose, onUpdate, 
                         <h2>Wysyłka Vouchera</h2>
                         <div className="form-group">
                             <label>Kod vouchera:</label>
-                            <input type="text" value={voucher.voucherCode} disabled className="voucher-code-modal" />
+                            <input type="text" value={voucher.voucherCode} disabled className="voucher-code-modal"/>
                         </div>
                         <div className="form-group">
                             <label>Adres Email:</label>
@@ -187,7 +188,17 @@ const VoucherModal: React.FC<VoucherModalProps> = ({voucher, onClose, onUpdate, 
                                 value={emailAddress}
                                 onChange={(e) => setEmailAddress(e.target.value)}
                                 placeholder="Podaj Adres Email"
-                                required />
+                                required/>
+                        </div>
+                        <div className="form-group">
+                            <label>Dla kogo</label>
+                            <input
+                                type="text"
+                                value={userName}
+                                onChange={(e) => setUserName(e.target.value)}
+                                placeholder="Podaj dla kogo ma być wystawiony voucher"
+                                required
+                            />
                         </div>
                         {error && <p className="error">{error}</p>}
                         <div className="modal-buttons">

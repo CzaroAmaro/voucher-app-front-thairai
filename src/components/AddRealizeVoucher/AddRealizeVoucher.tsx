@@ -21,6 +21,7 @@ const AddRealizeVoucher: React.FC<AddRealizeVoucherProps> = ({
     const [note, setNote] = useState<string>("");
     const [howManyDaysAvailable, setHowManyDaysAvailable] = useState<number>(0);
     const [email, setEmail] = useState<string>("");
+    const [userName, setUserName] = useState("");
     const [place, setplace] = useState<string>("");
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [vouchers, setVouchers] = useState<Voucher[]>([]);
@@ -42,7 +43,7 @@ const AddRealizeVoucher: React.FC<AddRealizeVoucherProps> = ({
             const newVoucher: Voucher = response.data;
             if (email.trim()) {
                 try {
-                    const notifResponse = await sendEmail(newVoucher.voucherCode, email);
+                    const notifResponse = await sendEmail(newVoucher.voucherCode, email, userName);
                     window.alert(`Voucher dodany pomyślnie! ${notifResponse.data.message}`);
                 } catch (notifErr: any) {
                     console.error("Błąd przy wysyłaniu wiadomości:", notifErr);
@@ -56,6 +57,7 @@ const AddRealizeVoucher: React.FC<AddRealizeVoucherProps> = ({
             setNote("");
             setHowManyDaysAvailable(0);
             setEmail("");
+            setUserName("");
         } catch (err) {
             console.error("Błąd przy dodawaniu vouchera:", err);
             setError("Wystąpił błąd podczas dodawania vouchera.");
@@ -206,6 +208,15 @@ const AddRealizeVoucher: React.FC<AddRealizeVoucherProps> = ({
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             placeholder="Podaj adres email"
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label>Dla kogo</label>
+                        <input
+                            type="text"
+                            value={userName}
+                            onChange={(e) => setUserName(e.target.value)}
+                            placeholder="Podaj dla kogo ma być wystawiony voucher"
                         />
                     </div>
 

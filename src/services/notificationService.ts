@@ -6,6 +6,6 @@ export const getNotifications =  () => {
     return axios.get(`${baseURL}`);
 };
 
-export const sendEmail = (voucherCode: string, email: string) => {
-    return axios.post(`${baseURL}/send`, {voucherCode, email});
+export const sendEmail = (voucherCode: string, email: string, userName: string,) => {
+    return axios.post(`${baseURL}/send`, {voucherCode, email, userName});
 };
