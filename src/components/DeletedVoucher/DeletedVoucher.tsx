@@ -1,17 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { getDeletedVoucher } from "../../services/voucherService";
 import "./DeletedVoucher.css";
-import {Voucher} from "../../models/Voucher.ts";
-import VoucherModal from "../VoucherModal/VoucherModal.tsx";
 import DeleteVoucherModal from "../DeleteVoucherModal/DeleteVoucherModal.tsx";
+import {Voucher} from "../../models/Voucher.ts";
 
-interface DeletedVoucher {
-    id: number;
-    voucherCode: string;
-    saleDate: string;
-    paymentMethod: string;
-    amount: number;
-    note: string;
+// Rozszerz interfejs Voucher o dodatkowe właściwości usuniętego vouchera
+interface DeletedVoucher extends Voucher {
     deletedDate: string;
     reasonForDeletion: string;
 }
@@ -20,7 +14,7 @@ const DeletedVoucher: React.FC = () => {
     const [vouchers, setVouchers] = useState<DeletedVoucher[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [selectedVoucher, setSelectedVoucher] = useState<Voucher | null>(null);
+    const [selectedVoucher, setSelectedVoucher] = useState<DeletedVoucher | null>(null);
 
     useEffect(() => {
         const loadDeletedVouchers = async () => {
@@ -39,7 +33,7 @@ const DeletedVoucher: React.FC = () => {
         loadDeletedVouchers();
     }, []);
 
-    const handleRowClick = (voucher: Voucher) => {
+    const handleRowClick = (voucher: DeletedVoucher) => {
         setSelectedVoucher(voucher);
     };
 

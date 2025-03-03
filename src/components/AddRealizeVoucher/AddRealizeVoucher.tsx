@@ -250,7 +250,7 @@ const AddRealizeVoucher: React.FC<AddRealizeVoucherProps> = ({
                             <tr key={voucherItem.id}>
                                 <td>{voucherItem.id}</td>
                                 <td>{voucherItem.voucherCode}</td>
-                                <td>{voucherItem.saleDate}</td>
+                                <td>{voucherItem.saleDate.toString()}</td>
                                 <td>{voucherItem.paymentMethod}</td>
                                 <td>{voucherItem.amount}</td>
                                 <td>{voucherItem.availableAmount}</td>
