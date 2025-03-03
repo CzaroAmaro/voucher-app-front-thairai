@@ -8,6 +8,7 @@ const AddVoucher: React.FC = () => {
     const [amount, setAmount] = useState<number>(0);
     const [note, setNote] = useState("");
     const [howManyDaysAvailable, setHowManyDaysAvailable] = useState<number>(0);
+    const [place, setPlace] = useState<string>("");
     const [email, setEmail] = useState("");
     const [error, setError] = useState<string>("");
 
@@ -20,6 +21,7 @@ const AddVoucher: React.FC = () => {
                 amount,
                 note,
                 howManyDaysAvailable,
+                place,
             });
             const newVoucher = response.data;
 
@@ -101,6 +103,19 @@ const AddVoucher: React.FC = () => {
                         required
                         placeholder="Podaj liczbę dni"
                     />
+                </div>
+
+                <div className="form-group">
+                    <label>Miejsce:</label>
+                    <select
+                        value={place}
+                        onChange={(e) => setPlace(e.target.value)}
+                        required
+                    >
+                        <option value="">Wybierz miejsce</option>
+                        <option value="Ostrołęka">Ostrołęka</option>
+                        <option value="Mława">Mława</option>
+                    </select>
                 </div>
 
                 <div className="form-group">

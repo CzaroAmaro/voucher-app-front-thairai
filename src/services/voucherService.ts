@@ -32,6 +32,7 @@ export const addVoucher = (data:{
     amount: number;
     note: string;
     howManyDaysAvailable: number;
+    place: string;
 }) => {
     return axios.post(`${baseURL}`, data);
 };

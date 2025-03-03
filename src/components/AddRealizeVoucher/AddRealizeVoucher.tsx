@@ -21,6 +21,7 @@ const AddRealizeVoucher: React.FC<AddRealizeVoucherProps> = ({
     const [note, setNote] = useState<string>("");
     const [howManyDaysAvailable, setHowManyDaysAvailable] = useState<number>(0);
     const [email, setEmail] = useState<string>("");
+    const [place, setplace] = useState<string>("");
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [vouchers, setVouchers] = useState<Voucher[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
@@ -36,6 +37,7 @@ const AddRealizeVoucher: React.FC<AddRealizeVoucherProps> = ({
                 amount,
                 note,
                 howManyDaysAvailable,
+                place,
             });
             const newVoucher: Voucher = response.data;
             if (email.trim()) {
@@ -185,6 +187,19 @@ const AddRealizeVoucher: React.FC<AddRealizeVoucherProps> = ({
                     </div>
 
                     <div className="form-group">
+                        <label>Miejsce:</label>
+                        <select
+                            value={place}
+                            onChange={(e) => setplace(e.target.value)}
+                            required
+                        >
+                            <option value="">Wybierz miejsce</option>
+                            <option value="Ostrołęka">Ostrołęka</option>
+                            <option value="Mława">Mława</option>
+                        </select>
+                    </div>
+
+                    <div className="form-group">
                         <label>Email klienta</label>
                         <input
                             type="email"
@@ -225,6 +240,7 @@ const AddRealizeVoucher: React.FC<AddRealizeVoucherProps> = ({
                             <th>Pozostała kwota</th>
                             <th>Notatka</th>
                             <th>Ważny do</th>
+                            <th>Miejsce</th>
                             <th>Kwota do realizacji</th>
                             <th>Akcja</th>
                         </tr>
@@ -240,6 +256,7 @@ const AddRealizeVoucher: React.FC<AddRealizeVoucherProps> = ({
                                 <td>{voucherItem.availableAmount}</td>
                                 <td>{voucherItem.note}</td>
                                 <td>{new Date(voucherItem.validUntil).toLocaleDateString()}</td>
+                                <td>{voucherItem.place}</td>
                                 <td>
                                     <input
                                         type="number"

@@ -191,6 +191,13 @@ const VouchersList: React.FC = () => {
                             sortDirection={sortDirection}
                             onSort={handleSort}
                         />
+                        <VoucherSort
+                            column="place"
+                            label="Miejsce"
+                            sortColumn={sortColumn}
+                            sortDirection={sortDirection}
+                            onSort={handleSort}
+                        />
                     </tr>
                     </thead>
                     <tbody>
@@ -210,6 +217,7 @@ const VouchersList: React.FC = () => {
                             <td>{voucher.note}</td>
                             <td>{voucher.availableAmount} zł</td>
                             <td>{new Date(voucher.validUntil).toLocaleDateString()}</td>
+                            <td>{voucher.place}</td>
                         </tr>
                     ))}
                     </tbody>

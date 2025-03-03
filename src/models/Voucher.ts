@@ -9,4 +9,5 @@ export interface Voucher {
     note: string;
     availableAmount: number;
     validUntil: Date;
+    place: string;
 }
