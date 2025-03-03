@@ -26,6 +26,7 @@
   --table-list-hover-bg: #c3c3c3;
   --table-list-border: #ededed;
   --table-tr-color: #0e0e0e;
+  --select-bg: #dddddd;
 }
 
 [data-theme="dark"] {
@@ -42,6 +43,7 @@
   --table-list-hover-bg: #3a3a3a;
   --table-list-border: #444;
   --table-tr-color: #e1e1e1;
+  --select-bg: #2c2c2c;
 }
 
 ::-webkit-scrollbar {

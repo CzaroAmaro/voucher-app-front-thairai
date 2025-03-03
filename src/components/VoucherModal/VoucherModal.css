@@ -79,7 +79,6 @@
 }
 .form-group input,
 .form-group select {
-    color: var(--table-tr-color);
     width: 100%;
     padding: 10px;
     border: 1px solid #ddd;
@@ -95,13 +94,13 @@
 }
 
 .form-group select {
-    background-color: #2c2c2c;
-    color: #fff;
+    background-color: var(--select-bg);
+    color: var(--table-tr-color);
     border: 1px solid #444;
 }
 .form-group select:focus {
     border-color: #007bff;
-    background-color: #3a3a3a;
+    background-color: var(--select-bg);
 }
 
 .modal-buttons {
@@ -128,4 +127,7 @@
     color: #ff6b6b;
     margin-top: 10px;
     text-align: center;
+}
+.voucher-code-modal{
+    color:var(--table-tr-color);
 }

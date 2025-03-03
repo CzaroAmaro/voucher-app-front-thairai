@@ -117,7 +117,7 @@ const VoucherModal: React.FC<VoucherModalProps> = ({voucher, onClose, onUpdate, 
                         <h2>Realizacja Vouchera</h2>
                         <div className="form-group">
                             <label>Kod vouchera:</label>
-                            <input type="text" value={voucher.voucherCode} disabled />
+                            <input type="text" value={voucher.voucherCode} disabled className="voucher-code-modal"/>
                         </div>
                         <div className="form-group">
                             <label>Kwota:</label>
@@ -140,7 +140,7 @@ const VoucherModal: React.FC<VoucherModalProps> = ({voucher, onClose, onUpdate, 
                         <h2>Usuwanie Vouchera</h2>
                         <div className="form-group">
                             <label>Kod vouchera:</label>
-                            <input type="text" value={voucher.voucherCode} disabled />
+                            <input type="text" value={voucher.voucherCode} disabled className="voucher-code-modal"/>
                         </div>
                         <div className="form-group">
                             <label>Powód usunięcia:</label>
@@ -178,7 +178,7 @@ const VoucherModal: React.FC<VoucherModalProps> = ({voucher, onClose, onUpdate, 
                         <h2>Wysyłka Vouchera</h2>
                         <div className="form-group">
                             <label>Kod vouchera:</label>
-                            <input type="text" value={voucher.voucherCode} disabled />
+                            <input type="text" value={voucher.voucherCode} disabled className="voucher-code-modal" />
                         </div>
                         <div className="form-group">
                             <label>Adres Email:</label>
