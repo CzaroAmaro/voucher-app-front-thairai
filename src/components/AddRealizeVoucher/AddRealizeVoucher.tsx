@@ -13,18 +13,17 @@ interface AddRealizeVoucherProps {
     onUpdate?: (updatedVoucher: Voucher) => void;
 }
 
-const AddRealizeVoucher: React.FC<AddRealizeVoucherProps> = ({
-                                                                 onUpdate,
-                                                             }) => {
+const AddRealizeVoucher: React.FC<AddRealizeVoucherProps> = ({ onUpdate }) => {
     const [paymentMethod, setPaymentMethod] = useState<string>("");
     const [amount, setAmount] = useState<number>(0);
     const [note, setNote] = useState<string>("");
     const [howManyDaysAvailable, setHowManyDaysAvailable] = useState<number>(0);
     const [email, setEmail] = useState<string>("");
     const [userName, setUserName] = useState("");
-    const [place, setplace] = useState<string>("");
+    const [place, setPlace] = useState<string>("");
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [vouchers, setVouchers] = useState<Voucher[]>([]);
+    const [voucherNode, setVoucherNode] = useState<string>("");
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string>("");
     const [redemptionAmounts, setRedemptionAmounts] = useState<{ [key: number]: number }>({});
@@ -41,16 +40,21 @@ const AddRealizeVoucher: React.FC<AddRealizeVoucherProps> = ({
                 place,
             });
             const newVoucher: Voucher = response.data;
+            setVouchers((prev) => [newVoucher, ...prev]);
+
             if (email.trim()) {
                 try {
-                    const notifResponse = await sendEmail(newVoucher.voucherCode, email, userName);
-                    window.alert(`Voucher dodany pomyślnie! ${notifResponse.data.message}`);
+                    const notifResponse = await sendEmail(
+                        newVoucher.voucherCode,
+                        email,
+                        userName,
+                        voucherNode
+                    );
+                    console.log(`Wiadomość wysłana: ${notifResponse.data.message}`);
                 } catch (notifErr: any) {
                     console.error("Błąd przy wysyłaniu wiadomości:", notifErr);
-                    window.alert("Voucher dodany, ale wysłanie wiadomości nie powiodło się.");
+                    setError("Voucher dodany, ale wysłanie wiadomości nie powiodło się.");
                 }
-            } else {
-                window.alert("Voucher dodany pomyślnie!");
             }
             setPaymentMethod("");
             setAmount(0);
@@ -58,6 +62,7 @@ const AddRealizeVoucher: React.FC<AddRealizeVoucherProps> = ({
             setHowManyDaysAvailable(0);
             setEmail("");
             setUserName("");
+            setVoucherNode("");
         } catch (err) {
             console.error("Błąd przy dodawaniu vouchera:", err);
             setError("Wystąpił błąd podczas dodawania vouchera.");
@@ -123,7 +128,7 @@ const AddRealizeVoucher: React.FC<AddRealizeVoucherProps> = ({
             if (onUpdate) {
                 onUpdate(response.data);
             }
-            window.alert("Voucher zrealizowany pomyślnie!");
+            console.log("Voucher zrealizowany pomyślnie!");
             setVouchers((prev) => prev.filter((v) => v.id !== voucherItem.id));
         } catch (err) {
             console.error("Błąd przy realizacji vouchera:", err);
@@ -192,7 +197,7 @@ const AddRealizeVoucher: React.FC<AddRealizeVoucherProps> = ({
                         <label>Miejsce:</label>
                         <select
                             value={place}
-                            onChange={(e) => setplace(e.target.value)}
+                            onChange={(e) => setPlace(e.target.value)}
                             required
                         >
                             <option value="">Wybierz miejsce</option>
@@ -219,11 +224,57 @@ const AddRealizeVoucher: React.FC<AddRealizeVoucherProps> = ({
                             placeholder="Podaj dla kogo ma być wystawiony voucher"
                         />
                     </div>
+                    <div className="form-group">
+                        <label>Informacja na voucherze</label>
+                        <input
+                            type="text"
+                            value={voucherNode}
+                            onChange={(e) => setVoucherNode(e.target.value)}
+                            placeholder="Podaj informacje o usłudze na voucherze."
+                        />
+                    </div>
 
                     <button type="submit">Dodaj Voucher</button>
                 </form>
 
                 {error && <p className="error">{error}</p>}
+
+                {/* Tabela wyświetlająca dodane vouchery */}
+                {vouchers.length > 0 && (
+                    <div className="voucher-list">
+                        <h3>Dodane vouchery</h3>
+                        <table className="voucher-table">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Kod</th>
+                                <th>Data sprzedaży</th>
+                                <th>Metoda płatności</th>
+                                <th>Kwota</th>
+                                <th>Pozostała kwota</th>
+                                <th>Notatka</th>
+                                <th>Ważny do</th>
+                                <th>Miejsce</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {vouchers.map((voucherItem) => (
+                                <tr key={voucherItem.id}>
+                                    <td>{voucherItem.id}</td>
+                                    <td>{voucherItem.voucherCode}</td>
+                                    <td>{new Date(voucherItem.saleDate).toLocaleDateString()}</td>
+                                    <td>{voucherItem.paymentMethod}</td>
+                                    <td>{voucherItem.amount}</td>
+                                    <td>{voucherItem.availableAmount}</td>
+                                    <td>{voucherItem.note}</td>
+                                    <td>{new Date(voucherItem.validUntil).toLocaleDateString()}</td>
+                                    <td>{voucherItem.place}</td>
+                                </tr>
+                            ))}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
             </div>
 
             <div className="search-voucher-section">
@@ -261,7 +312,7 @@ const AddRealizeVoucher: React.FC<AddRealizeVoucherProps> = ({
                             <tr key={voucherItem.id}>
                                 <td>{voucherItem.id}</td>
                                 <td>{voucherItem.voucherCode}</td>
-                                <td>{voucherItem.saleDate.toString()}</td>
+                                <td>{new Date(voucherItem.saleDate).toLocaleDateString()}</td>
                                 <td>{voucherItem.paymentMethod}</td>
                                 <td>{voucherItem.amount}</td>
                                 <td>{voucherItem.availableAmount}</td>
@@ -286,7 +337,9 @@ const AddRealizeVoucher: React.FC<AddRealizeVoucherProps> = ({
                                     />
                                 </td>
                                 <td>
-                                    <button onClick={() => handleRealize(voucherItem)}>Zrealizuj</button>
+                                    <button onClick={() => handleRealize(voucherItem)}>
+                                        Zrealizuj
+                                    </button>
                                 </td>
                             </tr>
                         ))}

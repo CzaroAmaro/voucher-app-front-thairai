@@ -19,6 +19,7 @@ const VoucherModal: React.FC<VoucherModalProps> = ({voucher, onClose, onUpdate, 
     const [activeTab, setActiveTab] = useState<"realizacja" | "usuwanie" | "wysylka" >("realizacja");
     const [emailAddress, setEmailAddress] = useState<string>("");
     const [userName, setUserName] = useState<string>("");
+    const [voucherNode, setVoucherNode] = useState<string>("");
 
     const handleRealize = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -80,7 +81,7 @@ const VoucherModal: React.FC<VoucherModalProps> = ({voucher, onClose, onUpdate, 
         return;
     }
     try{
-        const response = await sendEmail(voucher.voucherCode, emailAddress, userName);
+        const response = await sendEmail(voucher.voucherCode, emailAddress, userName, voucherNode);
         window.alert(response.data.message || "Voucher wysłany pomyślnie!");
         onClose();
     } catch (err: any){
@@ -198,6 +199,15 @@ const VoucherModal: React.FC<VoucherModalProps> = ({voucher, onClose, onUpdate, 
                                 onChange={(e) => setUserName(e.target.value)}
                                 placeholder="Podaj dla kogo ma być wystawiony voucher"
                                 required
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label>Informacja na voucherze</label>
+                            <input
+                                type="text"
+                                value={voucherNode}
+                                onChange={(e) => setVoucherNode(e.target.value)}
+                                placeholder="Podaj informacje o usłudze na voucherze."
                             />
                         </div>
                         {error && <p className="error">{error}</p>}
