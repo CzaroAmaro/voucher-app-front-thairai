@@ -9,6 +9,9 @@ export const getReport =  (month: number, year: number) => {
     });
 };
 
-export const generateReportList = (voucherIds: number[]) => {
-    return axios.post(`${baseURL}/report-list`, voucherIds, { responseType: "blob" });
+export const generateReportList = (voucherIds: number[], month: number, year: number) => {
+    return axios.post(`${baseURL}/report-list`, voucherIds, {
+        responseType: "blob",
+        params: { month, year },
+    });
 };

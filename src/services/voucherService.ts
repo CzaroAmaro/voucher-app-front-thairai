@@ -27,6 +27,12 @@ export const getVoucherByMonthAndYear = (month: number, year: number) => {
     });
 };
 
+export const getVoucherRealizedByMonthAndYear = (month: number, year: number) => {
+    return axios.get(`${baseURL}/by-year-and-month/realized`, {
+        params: { month, year },
+    });
+};
+
 export const addVoucher = (data:{
     paymentMethod: string;
     amount: number;

@@ -1,13 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./ReportListGenerator.css";
-import { getVoucherByMonthAndYear } from "../../services/voucherService";
+import {
+    getVoucherByMonthAndYear,
+    getVoucherRealizedByMonthAndYear
+} from "../../services/voucherService";
 import { generateReportList } from "../../services/reportService";
 import { Voucher } from "../../models/Voucher";
 
 const ReportListGenerator: React.FC = () => {
     const [month, setMonth] = useState<string>("");
     const [year, setYear] = useState<string>("");
-    const [vouchers, setVouchers] = useState<Voucher[]>([]);
+    const [issuedVouchers, setIssuedVouchers] = useState<Voucher[]>([]);
+    const [realizedVouchers, setRealizedVouchers] = useState<Voucher[]>([]);
     const [selectedIds, setSelectedIds] = useState<number[]>([]);
     const [reportUrl, setReportUrl] = useState<string>("");
     const [error, setError] = useState<string>("");
@@ -19,8 +23,12 @@ const ReportListGenerator: React.FC = () => {
         setReportUrl("");
         try {
             setLoading(true);
-            const response = await getVoucherByMonthAndYear(Number(month), Number(year));
-            setVouchers(response.data);
+            const [issuedResponse, realizedResponse] = await Promise.all([
+                getVoucherByMonthAndYear(Number(month), Number(year)),
+                getVoucherRealizedByMonthAndYear(Number(month), Number(year))
+            ]);
+            setIssuedVouchers(issuedResponse.data);
+            setRealizedVouchers(realizedResponse.data);
             setSelectedIds([]); // czyścimy zaznaczenia przy nowym pobieraniu
         } catch (err) {
             setError("Nie udało się pobrać voucherów dla podanego miesiąca i roku.");
@@ -38,7 +46,6 @@ const ReportListGenerator: React.FC = () => {
         }
     };
 
-
     const handleGenerateReport = async (e: React.FormEvent) => {
         e.preventDefault();
         setError("");
@@ -47,8 +54,12 @@ const ReportListGenerator: React.FC = () => {
             return;
         }
         try {
-            const response = await generateReportList(selectedIds);
-
+            // Przekazujemy również month i year do endpointa
+            const response = await generateReportList(
+                selectedIds,
+                Number(month),
+                Number(year)
+            );
             const blob = new Blob([response.data], { type: "application/pdf" });
             const url = URL.createObjectURL(blob);
             console.log("Otrzymany URL:", url);
@@ -58,6 +69,15 @@ const ReportListGenerator: React.FC = () => {
             console.error(err);
         }
     };
+
+    // Cleanup URL blob aby uniknąć wycieków pamięci
+    useEffect(() => {
+        return () => {
+            if (reportUrl) {
+                URL.revokeObjectURL(reportUrl);
+            }
+        };
+    }, [reportUrl]);
 
     return (
         <div className="report-list-generator">
@@ -101,30 +121,56 @@ const ReportListGenerator: React.FC = () => {
             {loading && <p>Ładowanie voucherów...</p>}
             {error && <p className="error">{error}</p>}
 
-            {vouchers.length > 0 && (
-                <div className="voucher-list">
-                    <h3>Wybierz vouchery do raportu:</h3>
-                    <ul>
-                        {vouchers.map((voucher) => (
-                            <li key={voucher.id}>
-                                <label>
-                                    <input
-                                        type="checkbox"
-                                        onChange={(e) =>
-                                            handleCheckboxChange(voucher.id, e.target.checked)
-                                        }
-                                    />{" "}
-                                    {voucher.id}{" "}
-                                    {voucher.voucherCode} –{" "}
-                                    {new Date(voucher.saleDate).toLocaleDateString()}{" "}
-                                    {voucher.paymentMethod}{" "}
-                                    {voucher.amount}zł
-                                </label>
-                            </li>
-                        ))}
-                    </ul>
-                    <button onClick={handleGenerateReport}>Generuj raport</button>
-                </div>
+            {(issuedVouchers.length > 0 || realizedVouchers.length > 0) && (
+                <>
+                    {issuedVouchers.length > 0 && (
+                        <div className="voucher-list">
+                            <h3>Vouchery sprzedane:</h3>
+                            <ul>
+                                {issuedVouchers.map((voucher) => (
+                                    <li key={voucher.id}>
+                                        <label>
+                                            <input
+                                                type="checkbox"
+                                                onChange={(e) =>
+                                                    handleCheckboxChange(voucher.id, e.target.checked)
+                                                }
+                                            />{" "}
+                                            {voucher.id} {voucher.voucherCode} –{" "}
+                                            {new Date(voucher.saleDate).toLocaleDateString()}{" "}
+                                            {voucher.paymentMethod} {voucher.amount}zł {" "}
+                                            {voucher.place}
+                                        </label>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    )}
+                    {realizedVouchers.length > 0 && (
+                        <div className="voucher-list">
+                            <h3>Vouchery zrealizowane:</h3>
+                            <ul>
+                                {realizedVouchers.map((voucher) => (
+                                    <li key={voucher.id}>
+                                        <label>
+                                            <input
+                                                type="checkbox"
+                                                onChange={(e) =>
+                                                    handleCheckboxChange(voucher.id, e.target.checked)
+                                                }
+                                            />{" "}
+                                            {voucher.id} {voucher.voucherCode} –{" "}
+                                            {new Date(voucher.saleDate).toLocaleDateString()}{" "}
+                                            {voucher.paymentMethod} {voucher.amount}zł {" "}
+                                            {voucher.place}
+                                        </label>
+                                    </li>
+                                ))}
+                            </ul>
+                            <button onClick={handleGenerateReport}>Generuj raport</button>
+                        </div>
+                    )}
+                </>
             )}
 
             {reportUrl && (

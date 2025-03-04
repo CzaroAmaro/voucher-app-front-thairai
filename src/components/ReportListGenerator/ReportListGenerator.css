@@ -5,7 +5,7 @@
     max-width: 620px;
     margin: 40px auto;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-    color: var(--table-tr-color);
+    color: black;
 }
 
 .report-list-generator h2 {
