@@ -11,6 +11,7 @@ const AddVoucher: React.FC = () => {
     const [place, setPlace] = useState<string>("");
     const [email, setEmail] = useState("");
     const [userName, setUserName] = useState("");
+    const [voucherNode, setVoucherNode] = useState<string>("");
     const [error, setError] = useState<string>("");
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -28,23 +29,25 @@ const AddVoucher: React.FC = () => {
 
             if (email.trim()) {
                 try {
-                    const notifResponse = await sendEmail(newVoucher.voucherCode, email, userName);
-                    window.alert(`Voucher dodany pomyślnie! ${notifResponse.data.message}`);
+                    const notifResponse = await sendEmail(
+                        newVoucher.voucherCode,
+                        email,
+                        userName,
+                        voucherNode
+                    );
+                    console.log(`Wiadomość wysłana: ${notifResponse.data.message}`);
                 } catch (notifErr: any) {
                     console.error("Błąd przy wysyłaniu wiadomości:", notifErr);
-                    window.alert("Voucher dodany, ale wysłanie wiadomości nie powiodło się.");
+                    setError("Voucher dodany, ale wysłanie wiadomości nie powiodło się.");
                 }
-            } else {
-                window.alert("Voucher dodany pomyślnie!");
             }
-
-            // Resetowanie pól formularza
             setPaymentMethod("");
             setAmount(0);
             setNote("");
             setHowManyDaysAvailable(0);
             setEmail("");
             setUserName("");
+            setVoucherNode("");
         } catch (err) {
             console.error("Błąd przy dodawaniu vouchera:", err);
             setError("Wystąpił błąd podczas dodawania vouchera.");
@@ -137,6 +140,15 @@ const AddVoucher: React.FC = () => {
                         value={userName}
                         onChange={(e) => setUserName(e.target.value)}
                         placeholder="Podaj dla kogo ma być wystawiony voucher"
+                    />
+                </div>
+                <div className="form-group">
+                    <label>Informacja na voucherze</label>
+                    <input
+                        type="text"
+                        value={voucherNode}
+                        onChange={(e) => setVoucherNode(e.target.value)}
+                        placeholder="Podaj informacje o usłudze na voucherze."
                     />
                 </div>
 

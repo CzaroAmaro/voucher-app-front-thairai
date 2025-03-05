@@ -239,7 +239,6 @@ const AddRealizeVoucher: React.FC<AddRealizeVoucherProps> = ({ onUpdate }) => {
 
                 {error && <p className="error">{error}</p>}
 
-                {/* Tabela wyświetlająca dodane vouchery */}
                 {vouchers.length > 0 && (
                     <div className="voucher-list">
                         <h3>Dodane vouchery</h3>

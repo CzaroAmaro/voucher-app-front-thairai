@@ -49,6 +49,20 @@ export const realizeVoucher = (code: string, amount: number) => {
     });
 };
 
+export const editVoucher = (
+    id: number,
+    data: {
+        paymentMethod: string;
+        amount: number;
+        realized: string;
+        realizedDate: string;
+        note: string;
+        availableAmount: number;
+    }
+) => {
+    return axios.patch(`${baseURL}/${id}`, data);
+};
+
 export const deleteVoucher = (id:number, reason: string) => {
     return axios.delete(`${baseURL}/${id}`, {data: reason});
 }
