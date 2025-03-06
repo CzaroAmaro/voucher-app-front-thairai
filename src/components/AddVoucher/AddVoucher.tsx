@@ -26,6 +26,7 @@ const AddVoucher: React.FC = () => {
                 place,
             });
             const newVoucher = response.data;
+            window.alert (`Voucher dodany pomyślnie! Kod vouchera: ${newVoucher.voucherCode}.`);
 
             if (email.trim()) {
                 try {
@@ -36,9 +37,11 @@ const AddVoucher: React.FC = () => {
                         voucherNote
                     );
                     console.log(`Wiadomość wysłana: ${notifResponse.data.message}`);
+                    window.alert (`Wiadomość wysłana pomyślnie!`);
                 } catch (notifErr: any) {
                     console.error("Błąd przy wysyłaniu wiadomości:", notifErr);
                     setError("Voucher dodany, ale wysłanie wiadomości nie powiodło się.");
+                    window.alert (`Błąd wysyłania wiadomości!`);
                 }
             }
             setPaymentMethod("");
@@ -51,6 +54,7 @@ const AddVoucher: React.FC = () => {
         } catch (err) {
             console.error("Błąd przy dodawaniu vouchera:", err);
             setError("Wystąpił błąd podczas dodawania vouchera.");
+            window.alert (`Błąd podczas dodawania vouchera!`);
         }
     };
 

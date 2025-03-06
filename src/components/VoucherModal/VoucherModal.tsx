@@ -255,16 +255,19 @@ const VoucherModal: React.FC<VoucherModalProps> = ({ voucher, onClose, onUpdate,
                         <h2>Edycja Vouchera</h2>
                         <div className="form-group">
                             <label>Kod vouchera:</label>
-                            <input type="text" value={voucher.voucherCode} disabled className="voucher-code-modal" />
+                            <input type="text" value={voucher.voucherCode} disabled className="voucher-code-modal"/>
                         </div>
                         <div className="form-group">
-                            <label>Sposób płatności:</label>
-                            <input
-                                type="text"
+                            <label>Metoda płatności:</label>
+                            <select
                                 value={editPaymentMethod}
                                 onChange={(e) => setEditPaymentMethod(e.target.value)}
                                 required
-                            />
+                            >
+                                <option value="">Wybierz metodę</option>
+                                <option value="Blik">Blik</option>
+                                <option value="Gotówka">Gotówka</option>
+                            </select>
                         </div>
                         <div className="form-group">
                             <label>Kwota:</label>
