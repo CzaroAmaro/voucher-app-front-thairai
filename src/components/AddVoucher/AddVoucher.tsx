@@ -11,7 +11,7 @@ const AddVoucher: React.FC = () => {
     const [place, setPlace] = useState<string>("");
     const [email, setEmail] = useState("");
     const [userName, setUserName] = useState("");
-    const [voucherNode, setVoucherNode] = useState<string>("");
+    const [voucherNote, setVoucherNote] = useState<string>("");
     const [error, setError] = useState<string>("");
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -33,7 +33,7 @@ const AddVoucher: React.FC = () => {
                         newVoucher.voucherCode,
                         email,
                         userName,
-                        voucherNode
+                        voucherNote
                     );
                     console.log(`Wiadomość wysłana: ${notifResponse.data.message}`);
                 } catch (notifErr: any) {
@@ -47,7 +47,7 @@ const AddVoucher: React.FC = () => {
             setHowManyDaysAvailable(0);
             setEmail("");
             setUserName("");
-            setVoucherNode("");
+            setVoucherNote("");
         } catch (err) {
             console.error("Błąd przy dodawaniu vouchera:", err);
             setError("Wystąpił błąd podczas dodawania vouchera.");
@@ -146,8 +146,8 @@ const AddVoucher: React.FC = () => {
                     <label>Informacja na voucherze</label>
                     <input
                         type="text"
-                        value={voucherNode}
-                        onChange={(e) => setVoucherNode(e.target.value)}
+                        value={voucherNote}
+                        onChange={(e) => setVoucherNote(e.target.value)}
                         placeholder="Podaj informacje o usłudze na voucherze."
                     />
                 </div>

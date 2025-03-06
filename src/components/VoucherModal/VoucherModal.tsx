@@ -24,7 +24,7 @@ const VoucherModal: React.FC<VoucherModalProps> = ({ voucher, onClose, onUpdate,
     const [activeTab, setActiveTab] = useState<"realizacja" | "usuwanie" | "wysylka" | "edycja">("realizacja");
     const [emailAddress, setEmailAddress] = useState<string>("");
     const [userName, setUserName] = useState<string>("");
-    const [voucherNode, setVoucherNode] = useState<string>("");
+    const [voucherNote, setVoucherNote] = useState<string>("");
 
     // Stany dla zakładki "Edycja"
     const [editPaymentMethod, setEditPaymentMethod] = useState<string>(voucher.paymentMethod);
@@ -86,7 +86,7 @@ const VoucherModal: React.FC<VoucherModalProps> = ({ voucher, onClose, onUpdate,
             return;
         }
         try {
-            const response = await sendEmail(voucher.voucherCode, emailAddress, userName, voucherNode);
+            const response = await sendEmail(voucher.voucherCode, emailAddress, userName, voucherNote);
             window.alert(response.data.message || "Voucher wysłany pomyślnie!");
             onClose();
         } catch (err) {
@@ -238,8 +238,8 @@ const VoucherModal: React.FC<VoucherModalProps> = ({ voucher, onClose, onUpdate,
                             <label>Informacja na voucherze:</label>
                             <input
                                 type="text"
-                                value={voucherNode}
-                                onChange={(e) => setVoucherNode(e.target.value)}
+                                value={voucherNote}
+                                onChange={(e) => setVoucherNote(e.target.value)}
                                 placeholder="Podaj informacje o usłudze na voucherze."
                             />
                         </div>

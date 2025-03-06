@@ -23,7 +23,7 @@ const AddRealizeVoucher: React.FC<AddRealizeVoucherProps> = ({ onUpdate }) => {
     const [place, setPlace] = useState<string>("");
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [vouchers, setVouchers] = useState<Voucher[]>([]);
-    const [voucherNode, setVoucherNode] = useState<string>("");
+    const [voucherNote, setVoucherNote] = useState<string>("");
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string>("");
     const [redemptionAmounts, setRedemptionAmounts] = useState<{ [key: number]: number }>({});
@@ -48,7 +48,7 @@ const AddRealizeVoucher: React.FC<AddRealizeVoucherProps> = ({ onUpdate }) => {
                         newVoucher.voucherCode,
                         email,
                         userName,
-                        voucherNode
+                        voucherNote
                     );
                     console.log(`Wiadomość wysłana: ${notifResponse.data.message}`);
                 } catch (notifErr: any) {
@@ -62,7 +62,7 @@ const AddRealizeVoucher: React.FC<AddRealizeVoucherProps> = ({ onUpdate }) => {
             setHowManyDaysAvailable(0);
             setEmail("");
             setUserName("");
-            setVoucherNode("");
+            setVoucherNote("");
         } catch (err) {
             console.error("Błąd przy dodawaniu vouchera:", err);
             setError("Wystąpił błąd podczas dodawania vouchera.");
@@ -228,8 +228,8 @@ const AddRealizeVoucher: React.FC<AddRealizeVoucherProps> = ({ onUpdate }) => {
                         <label>Informacja na voucherze</label>
                         <input
                             type="text"
-                            value={voucherNode}
-                            onChange={(e) => setVoucherNode(e.target.value)}
+                            value={voucherNote}
+                            onChange={(e) => setVoucherNote(e.target.value)}
                             placeholder="Podaj informacje o usłudze na voucherze."
                         />
                     </div>
