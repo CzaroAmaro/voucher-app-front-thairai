@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./ReportListGenerator.css";
 import {
     getVoucherByMonthAndYear,
-    getVoucherRealizedByMonthAndYear
+    getVoucherRealizedByMonthAndYear,
 } from "../../services/voucherService";
 import { generateReportList } from "../../services/reportService";
 import { Voucher } from "../../models/Voucher";
@@ -25,11 +25,11 @@ const ReportListGenerator: React.FC = () => {
             setLoading(true);
             const [issuedResponse, realizedResponse] = await Promise.all([
                 getVoucherByMonthAndYear(Number(month), Number(year)),
-                getVoucherRealizedByMonthAndYear(Number(month), Number(year))
+                getVoucherRealizedByMonthAndYear(Number(month), Number(year)),
             ]);
             setIssuedVouchers(issuedResponse.data);
             setRealizedVouchers(realizedResponse.data);
-            setSelectedIds([]); // czyścimy zaznaczenia przy nowym pobieraniu
+            setSelectedIds([]);
         } catch (err) {
             setError("Nie udało się pobrać voucherów dla podanego miesiąca i roku.");
             console.error(err);
@@ -38,11 +38,23 @@ const ReportListGenerator: React.FC = () => {
         }
     };
 
+    const toggleSelectAll = (vouchers: Voucher[]) => {
+        const voucherIds = vouchers.map((v) => v.id);
+        const allSelected = voucherIds.every((id) => selectedIds.includes(id));
+
+        if (allSelected) {
+            setSelectedIds((prev) => prev.filter((id) => !voucherIds.includes(id)));
+        } else {
+            const newIds = voucherIds.filter((id) => !selectedIds.includes(id));
+            setSelectedIds((prev) => [...prev, ...newIds]);
+        }
+    };
+
     const handleCheckboxChange = (id: number, checked: boolean) => {
         if (checked) {
-            setSelectedIds(prev => [...prev, id]);
+            setSelectedIds((prev) => [...prev, id]);
         } else {
-            setSelectedIds(prev => prev.filter(x => x !== id));
+            setSelectedIds((prev) => prev.filter((x) => x !== id));
         }
     };
 
@@ -54,7 +66,6 @@ const ReportListGenerator: React.FC = () => {
             return;
         }
         try {
-            // Przekazujemy również month i year do endpointa
             const response = await generateReportList(
                 selectedIds,
                 Number(month),
@@ -62,7 +73,6 @@ const ReportListGenerator: React.FC = () => {
             );
             const blob = new Blob([response.data], { type: "application/pdf" });
             const url = URL.createObjectURL(blob);
-            console.log("Otrzymany URL:", url);
             setReportUrl(url);
         } catch (err) {
             setError("Błąd podczas generowania raportu.");
@@ -70,7 +80,6 @@ const ReportListGenerator: React.FC = () => {
         }
     };
 
-    // Cleanup URL blob aby uniknąć wycieków pamięci
     useEffect(() => {
         return () => {
             if (reportUrl) {
@@ -91,18 +100,11 @@ const ReportListGenerator: React.FC = () => {
                         required
                     >
                         <option value="">Wybierz miesiąc</option>
-                        <option value="1">Styczeń</option>
-                        <option value="2">Luty</option>
-                        <option value="3">Marzec</option>
-                        <option value="4">Kwiecień</option>
-                        <option value="5">Maj</option>
-                        <option value="6">Czerwiec</option>
-                        <option value="7">Lipiec</option>
-                        <option value="8">Sierpień</option>
-                        <option value="9">Wrzesień</option>
-                        <option value="10">Październik</option>
-                        <option value="11">Listopad</option>
-                        <option value="12">Grudzień</option>
+                        {Array.from({length: 12}, (_, i) => (
+                            <option key={i + 1} value={i + 1}>
+                                {new Date(0, i).toLocaleString("pl", {month: "long"})}
+                            </option>
+                        ))}
                     </select>
                 </div>
                 <div className="form-group">
@@ -122,55 +124,81 @@ const ReportListGenerator: React.FC = () => {
             {error && <p className="error">{error}</p>}
 
             {(issuedVouchers.length > 0 || realizedVouchers.length > 0) && (
-                <>
+                <div className="vouchers-container">
                     {issuedVouchers.length > 0 && (
                         <div className="voucher-list">
-                            <h3>Vouchery sprzedane:</h3>
+                            <div className="voucher-list-header">
+                                <h3>Vouchery sprzedane:</h3>
+                                <button
+                                    type="button"
+                                    onClick={() => toggleSelectAll(issuedVouchers)}
+                                    className="select-all-button"
+                                >
+                                    {issuedVouchers.every((v) => selectedIds.includes(v.id))
+                                        ? "Odznacz wszystkie"
+                                        : "Zaznacz wszystkie"}
+                                </button>
+                            </div>
                             <ul>
                                 {issuedVouchers.map((voucher) => (
                                     <li key={voucher.id}>
                                         <label>
                                             <input
                                                 type="checkbox"
+                                                checked={selectedIds.includes(voucher.id)}
                                                 onChange={(e) =>
                                                     handleCheckboxChange(voucher.id, e.target.checked)
                                                 }
-                                            />{" "}
-                                            {voucher.id} {voucher.voucherCode} –{" "}
-                                            {new Date(voucher.saleDate).toLocaleDateString()}{" "}
-                                            {voucher.paymentMethod} {voucher.amount}zł {" "}
-                                            {voucher.place}
+                                            />
+                                            {voucher.id} {voucher.voucherCode} -{" "}
+                                            {new Date(voucher.saleDate).toLocaleDateString("pl")}{" "}
+                                            {voucher.paymentMethod} {voucher.amount}zł {voucher.place}
                                         </label>
                                     </li>
                                 ))}
                             </ul>
                         </div>
                     )}
+
                     {realizedVouchers.length > 0 && (
                         <div className="voucher-list">
-                            <h3>Vouchery zrealizowane:</h3>
+                            <div className="voucher-list-header">
+                                <h3>Vouchery zrealizowane:</h3>
+                                <button
+                                    type="button"
+                                    onClick={() => toggleSelectAll(realizedVouchers)}
+                                    className="select-all-button"
+                                >
+                                    {realizedVouchers.every((v) => selectedIds.includes(v.id))
+                                        ? "Odznacz wszystkie"
+                                        : "Zaznacz wszystkie"}
+                                </button>
+                            </div>
                             <ul>
                                 {realizedVouchers.map((voucher) => (
                                     <li key={voucher.id}>
                                         <label>
                                             <input
                                                 type="checkbox"
+                                                checked={selectedIds.includes(voucher.id)}
                                                 onChange={(e) =>
                                                     handleCheckboxChange(voucher.id, e.target.checked)
                                                 }
-                                            />{" "}
-                                            {voucher.id} {voucher.voucherCode} –{" "}
-                                            {new Date(voucher.saleDate).toLocaleDateString()}{" "}
-                                            {voucher.paymentMethod} {voucher.amount}zł {" "}
-                                            {voucher.place}
+                                            />
+                                            {voucher.id} {voucher.voucherCode} -{" "}
+                                            {new Date(voucher.saleDate).toLocaleDateString("pl")}{" "}
+                                            {voucher.paymentMethod} {voucher.amount}zł {voucher.place}
                                         </label>
                                     </li>
                                 ))}
                             </ul>
-                            <button onClick={handleGenerateReport}>Generuj raport</button>
                         </div>
                     )}
-                </>
+                    <button onClick={handleGenerateReport}>
+                        Generuj raport
+                    </button>
+                </div>
+
             )}
 
             {reportUrl && (
