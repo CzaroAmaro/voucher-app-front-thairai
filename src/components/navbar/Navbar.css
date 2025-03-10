@@ -3,10 +3,11 @@
     padding: 15px;
     color: #e1e1e1;
     height: 100vh;
-    border-radius: 8px;
-    font-weight: bold;
+    border-bottom-right-radius: 8px;
+    border-top-right-radius: 8px;
     box-sizing: border-box;
     overflow: hidden;
+    font-weight: 500;
 }
 .navbar {
     overflow-x: hidden;
@@ -38,7 +39,6 @@
 }
 
 .navbar a.active {
-    font-weight: bold;
     background-color: #06327a;
     border-radius: 8px;
 }
