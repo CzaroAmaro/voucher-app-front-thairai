@@ -1,5 +1,5 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, {useState} from "react";
+import { NavLink } from "react-router-dom";
 import "./Navbar.css";
 
 interface NavbarProps {
@@ -9,54 +9,78 @@ interface NavbarProps {
 }
 
 const Navbar: React.FC<NavbarProps> = ({ toggleDarkMode, darkMode, isLoggedIn }) => {
+    const [isCollapsed, setIsCollapsed] = useState(false);
+
     return (
-        <nav className="navbar">
-            <h1>Voucher app</h1>
+        <nav className={`navbar ${isCollapsed ? 'collapsed' : ''}`}>
+            <button
+                className="toggle-button"
+                onClick={() => setIsCollapsed(!isCollapsed)}
+            >
+                {isCollapsed ? '→' : '←'}
+            </button>
+
+            <h1>Voucher App</h1>
             <ul>
                 {!isLoggedIn && (
                     <>
                         <li>
-                            <Link to="/add-realize">✚ Dodaj i Realizuj</Link>
+                            <NavLink to="/add-realize" className={({isActive}) => isActive ? 'active' : ''}>
+                                ✚ <span className="link-text">Dodaj i Realizuj</span>
+                            </NavLink>
                         </li>
                         <li>
-                            <Link to="/login">
+                            <NavLink to="/login">
                                 <button className="hidden-login-button" aria-label="Logowanie">
                                     Logowanie
                                 </button>
-                            </Link>
+                            </NavLink>
                         </li>
                     </>
                 )}
                 {isLoggedIn && (
                     <>
                         <li>
-                            <Link to="/">🏠︎ Home</Link>
+                            <NavLink to="/" className={({isActive}) => isActive ? 'active' : ''}>
+                                🏠︎ <span className="link-text">Home</span>
+                            </NavLink>
                         </li>
                         <li>
-                            <Link to="/add">✚ Dodaj</Link>
+                            <NavLink to="/add" className={({isActive}) => isActive ? 'active' : ''}>
+                                ✚ <span className="link-text">Dodaj</span>
+                            </NavLink>
                         </li>
                         <li>
-                            <Link to="/deleted">🗑 Usunięte</Link>
+                            <NavLink to="/deleted" className={({isActive}) => isActive ? 'active' : ''}>
+                                🗑 <span className="link-text">Usunięte</span>
+                            </NavLink>
                         </li>
                         <li>
-                            <Link to="/sent">✉ Wysłane</Link>
+                            <NavLink to="/sent" className={({isActive}) => isActive ? 'active' : ''}>
+                                ✉︎ <span className="link-text">Wysłane</span>
+                            </NavLink>
                         </li>
                         <li>
-                            <Link to="/report">🗐 Generuj raport</Link>
+                            <NavLink to="/report" className={({isActive}) => isActive ? 'active' : ''}>
+                                🗐 <span className="link-text">Generuj raport</span>
+                            </NavLink>
                         </li>
                         <li>
-                            <Link to="/custom-report">🗐 Własny raport</Link>
+                            <NavLink to="/custom-report" className={({isActive}) => isActive ? 'active' : ''}>
+                                🗐 <span className="link-text">Własny raport</span>
+                            </NavLink>
                         </li>
                     </>
                 )}
             </ul>
             <label className="theme-switch">
-            <input
+                <input
                     type="checkbox"
                     checked={darkMode}
                     onChange={toggleDarkMode}
-                /> Dark Mode
+                />
                 <span className="slider"></span>
+                <span className="theme-text">Dark Mode</span>
             </label>
         </nav>
     );
