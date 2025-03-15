@@ -33,6 +33,12 @@ export const getVoucherRealizedByMonthAndYear = (month: number, year: number) =>
     });
 };
 
+export const getVoucherTwoDates = (day1: number, month1: number, year1: number, day2: number, month2: number, year2: number) => {
+    return axios.get(`${baseURL}/between-2-data`, {
+        params: {day1, month1, year1, day2, month2, year2},
+    });
+};
+
 export const addVoucher = (data:{
     paymentMethod: string;
     amount: number;
@@ -70,3 +76,4 @@ export const deleteVoucher = (id:number, reason: string) => {
 export const deleteVoucherPermanently = (id:number) => {
     return axios.delete(`${baseURL}/delete-permanently/${id}`)
 }
+

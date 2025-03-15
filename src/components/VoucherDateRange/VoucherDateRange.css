@@ -1,0 +1,103 @@
+.voucher-date-range-container {
+    max-width: 1580px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: var(--background-color-2);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.heading {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 2rem;
+    color: var(--table-list-head);
+}
+
+.voucher-date-range-form {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    margin-bottom: 5px;
+    font-weight: 500;
+    color: var(--primary-text-color);
+}
+
+.form-group input,
+.form-group select {
+    padding: 10px;
+    border: 1px solid var(--table-list-border);
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+.voucher-date-range-form button {
+    grid-column: 1 / -1;
+    justify-self: center;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 15px;
+    background-color: #007bff;
+    color: #fff;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+.voucher-date-range-form button:hover {
+    background-color: #0056b3;
+}
+
+.table-wrapper {
+    overflow-y: auto;
+    max-height: 660px;
+}
+
+.voucher-table {
+    width: 100%;
+    border-collapse: collapse;
+    overflow: hidden;
+    border-radius: 8px;
+}
+
+.voucher-table thead {
+    background: var(--table-list-head);
+}
+
+.voucher-table th,
+.voucher-table td {
+    padding: 16px 20px;
+    text-align: left;
+    border-bottom: 1px solid var(--table-list-border);
+}
+
+.voucher-table th {
+    font-weight: 600;
+    color: #ffffff;
+}
+
+.voucher-table tr {
+    color: var(--table-tr-color);
+}
+
+.voucher-table tbody tr {
+    background-color: var(--table-list-dark-bg);
+    transition: background-color 0.3s ease;
+}
+
+.voucher-table tbody tr:nth-child(even) {
+    background-color: var(--table-list-light-bg);
+}
+
+.voucher-table tbody tr:hover {
+    background-color: var(--table-list-hover-bg);
+}

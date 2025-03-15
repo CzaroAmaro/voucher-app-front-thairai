@@ -10,6 +10,7 @@ import ReportListGenerator from "./components/ReportListGenerator/ReportListGene
 import Login from "./components/Login/Login.tsx";
 import "./App.css";
 import AddRealizeVoucher from "./components/AddRealizeVoucher/AddRealizeVoucher.tsx";
+import VoucherDateRange from "./components/VoucherDateRange/VoucherDateRange.tsx";
 
 const App: React.FC = () => {
     const [darkMode, setDarkMode] = useState(
@@ -45,6 +46,7 @@ const App: React.FC = () => {
                                 <Route path="/sent" element={<NotificationList />} />
                                 <Route path="/report" element={<ReportGenerator />} />
                                 <Route path="/custom-report" element={<ReportListGenerator />} />
+                                <Route path="/date-range" element={<VoucherDateRange />} />
                             </>
                         )}
                     </Routes>

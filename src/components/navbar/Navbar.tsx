@@ -70,6 +70,11 @@ const Navbar: React.FC<NavbarProps> = ({ toggleDarkMode, darkMode, isLoggedIn })
                                 🗐 <span className="link-text">Własny raport</span>
                             </NavLink>
                         </li>
+                        <li>
+                            <NavLink to="/date-range" className={({isActive}) => isActive ? 'active' : ''}>
+                                🗐 <span className="link-text">Przegląd</span>
+                            </NavLink>
+                        </li>
                     </>
                 )}
             </ul>
