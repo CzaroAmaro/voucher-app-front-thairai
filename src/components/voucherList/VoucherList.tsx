@@ -22,7 +22,8 @@ const VouchersList: React.FC = () => {
         setLoading(true);
         try {
             const response = await getVouchers();
-            setVouchers(response.data);
+            const sorted = response.data.sort((a: Voucher, b: Voucher) => b.id - a.id);
+            setVouchers(sorted);
             setError(null);
         } catch (err) {
             setError("Nie udało się pobrać voucherów");
