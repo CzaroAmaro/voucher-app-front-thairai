@@ -7,6 +7,7 @@ import {
 } from "../../services/voucherService";
 import { sendEmail } from "../../services/notificationService";
 import { Voucher } from "../../models/Voucher";
+import Alert from "../Alert/Alert";
 import "./AddRealizeVoucher.css";
 
 interface AddRealizeVoucherProps {
@@ -27,6 +28,13 @@ const AddRealizeVoucher: React.FC<AddRealizeVoucherProps> = ({ onUpdate }) => {
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string>("");
     const [redemptionAmounts, setRedemptionAmounts] = useState<{ [key: number]: number }>({});
+    const [showAlert, setShowAlert] = useState(false);
+    const [alertMessage, setAlertMessage] = useState("");
+
+    const showNotification = (message: string) => {
+        setAlertMessage(message);
+        setShowAlert(true);
+    };
 
     const handleAddVoucher = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -40,7 +48,7 @@ const AddRealizeVoucher: React.FC<AddRealizeVoucherProps> = ({ onUpdate }) => {
                 place,
             });
             const newVoucher: Voucher = response.data;
-            window.alert (`Voucher dodany pomyślnie! Kod vouchera: ${newVoucher.voucherCode}.`);
+            showNotification(`Voucher dodany pomyślnie! Kod vouchera: ${newVoucher.voucherCode}.`);
             setVouchers((prev) => [newVoucher, ...prev]);
 
             if (email.trim()) {
@@ -52,11 +60,11 @@ const AddRealizeVoucher: React.FC<AddRealizeVoucherProps> = ({ onUpdate }) => {
                         voucherNote
                     );
                     console.log(`Wiadomość wysłana: ${notifResponse.data.message}`);
-                    window.alert (`Wiadomość wysłana pomyślnie!`);
+                    showNotification("Wiadomość wysłana pomyślnie!");
                 } catch (notifErr: any) {
                     console.error("Błąd przy wysyłaniu wiadomości:", notifErr);
                     setError("Voucher dodany, ale wysłanie wiadomości nie powiodło się.");
-                    window.alert (`Błąd wysyłania wiadomości!`);
+                    showNotification("Błąd wysyłania wiadomości!");
                 }
             }
             setPaymentMethod("");
@@ -69,7 +77,7 @@ const AddRealizeVoucher: React.FC<AddRealizeVoucherProps> = ({ onUpdate }) => {
         } catch (err) {
             console.error("Błąd przy dodawaniu vouchera:", err);
             setError("Wystąpił błąd podczas dodawania vouchera.");
-            window.alert (`Błąd podczas dodawania vouchera!`);
+            showNotification("Błąd podczas dodawania vouchera!");
         }
     };
 
@@ -350,6 +358,12 @@ const AddRealizeVoucher: React.FC<AddRealizeVoucherProps> = ({ onUpdate }) => {
                     </table>
                 )}
             </div>
+            {showAlert && (
+                <Alert
+                    message={alertMessage}
+                    onClose={() => setShowAlert(false)}
+                />
+            )}
         </div>
     );
 };
