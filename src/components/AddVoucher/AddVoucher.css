@@ -51,7 +51,6 @@
     background-color: #0056b3;
 }
 
-/* Komunikat o błędzie */
 .error {
     grid-column: 1 / -1;
     color: #ff6b6b;
@@ -70,3 +69,4 @@
     border-color: #007bff;
     background-color: var(--select-bg);
 }
+

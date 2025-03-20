@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { addVoucher } from "../../services/voucherService";
 import { sendEmail } from "../../services/notificationService.ts";
+import Alert from "../Alert/Alert";
 import "./AddVoucher.css";
 
 const AddVoucher: React.FC = () => {
@@ -13,6 +14,13 @@ const AddVoucher: React.FC = () => {
     const [userName, setUserName] = useState("");
     const [voucherNote, setVoucherNote] = useState<string>("");
     const [error, setError] = useState<string>("");
+    const [showAlert, setShowAlert] = useState(false);
+    const [alertMessage, setAlertMessage] = useState("");
+
+    const showNotification = (message: string) => {
+        setAlertMessage(message);
+        setShowAlert(true);
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -26,7 +34,7 @@ const AddVoucher: React.FC = () => {
                 place,
             });
             const newVoucher = response.data;
-            window.alert (`Voucher dodany pomyślnie! Kod vouchera: ${newVoucher.voucherCode}.`);
+            showNotification(`Voucher dodany pomyślnie! Kod vouchera: ${newVoucher.voucherCode}.`);
 
             if (email.trim()) {
                 try {
@@ -37,11 +45,11 @@ const AddVoucher: React.FC = () => {
                         voucherNote
                     );
                     console.log(`Wiadomość wysłana: ${notifResponse.data.message}`);
-                    window.alert (`Wiadomość wysłana pomyślnie!`);
+                    showNotification("Wiadomość wysłana pomyślnie!");
                 } catch (notifErr: any) {
                     console.error("Błąd przy wysyłaniu wiadomości:", notifErr);
                     setError("Voucher dodany, ale wysłanie wiadomości nie powiodło się.");
-                    window.alert (`Błąd wysyłania wiadomości!`);
+                    showNotification("Błąd wysyłania wiadomości!");
                 }
             }
             setPaymentMethod("");
@@ -54,12 +62,13 @@ const AddVoucher: React.FC = () => {
         } catch (err) {
             console.error("Błąd przy dodawaniu vouchera:", err);
             setError("Wystąpił błąd podczas dodawania vouchera.");
-            window.alert (`Błąd podczas dodawania vouchera!`);
+            showNotification("Błąd podczas dodawania vouchera!");
         }
     };
 
     return (
         <div className="add-voucher-container">
+
             <h2>Dodaj Voucher</h2>
             <form onSubmit={handleSubmit} className="add-voucher-form">
                 <div className="form-group">
@@ -160,6 +169,12 @@ const AddVoucher: React.FC = () => {
             </form>
 
             {error && <p className="error">{error}</p>}
+            {showAlert && (
+                <Alert
+                    message={alertMessage}
+                    onClose={() => setShowAlert(false)}
+                />
+            )}
         </div>
     );
 };
