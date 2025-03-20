@@ -207,6 +207,7 @@ const VouchersList: React.FC = () => {
                             key={voucher.voucherCode}
                             onClick={() => handleRowClick(voucher)}
                             style={{ cursor: "pointer" }}
+                            className={voucher.realized === "Tak" ? "realized" : ""}
                         >
                             <td>{voucher.id !== null ? voucher.id : "Brak"}</td>
                             <td>{voucher.voucherCode}</td>

@@ -90,3 +90,12 @@
 .search-form button:hover {
     background-color: #0056b3;
 }
+
+.table-container tbody tr.realized {
+    background-color: #f46666; /* lekko czerwony */
+}
+
+/* Opcjonalnie: modyfikacja efektu hover dla wierszy z klasą realized */
+.table-container tbody tr.realized:hover {
+    background-color: #fd3737;
+}
