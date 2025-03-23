@@ -111,7 +111,7 @@ const VouchersList: React.FC = () => {
                     type="text"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    placeholder="Wpisz ID lub fragment kodu"
+                    placeholder=" 🔍︎ Wyszukaj voucher"
                 />
                 <button type="submit">Szukaj</button>
                 <button type="button" onClick={handleReset}>
