@@ -8,7 +8,6 @@ const AddVoucher: React.FC = () => {
     const [amount, setAmount] = useState<number>(0);
     const [note, setNote] = useState("");
     const [howManyDaysAvailable, setHowManyDaysAvailable] = useState<number>(0);
-    const [place, setPlace] = useState<string>("");
     const [email, setEmail] = useState("");
     const [userName, setUserName] = useState("");
     const [voucherNote, setVoucherNote] = useState<string>("");
@@ -23,7 +22,6 @@ const AddVoucher: React.FC = () => {
                 amount,
                 note,
                 howManyDaysAvailable,
-                place,
             });
             const newVoucher = response.data;
             window.alert (`Voucher dodany pomyślnie! Kod vouchera: ${newVoucher.voucherCode}.`);
@@ -72,6 +70,7 @@ const AddVoucher: React.FC = () => {
                         <option value="">Wybierz metodę</option>
                         <option value="Blik">Blik</option>
                         <option value="Gotówka">Gotówka</option>
+                        <option value="Karta">Karta</option>
                     </select>
                 </div>
 
@@ -112,19 +111,6 @@ const AddVoucher: React.FC = () => {
                         required
                         placeholder="Podaj liczbę dni"
                     />
-                </div>
-
-                <div className="form-group">
-                    <label>Miejsce:</label>
-                    <select
-                        value={place}
-                        onChange={(e) => setPlace(e.target.value)}
-                        required
-                    >
-                        <option value="">Wybierz miejsce</option>
-                        <option value="Ostrołęka">Ostrołęka</option>
-                        <option value="Mława">Mława</option>
-                    </select>
                 </div>
 
                 <div className="form-group">

@@ -20,7 +20,6 @@ const AddRealizeVoucher: React.FC<AddRealizeVoucherProps> = ({ onUpdate }) => {
     const [howManyDaysAvailable, setHowManyDaysAvailable] = useState<number>(0);
     const [email, setEmail] = useState<string>("");
     const [userName, setUserName] = useState("");
-    const [place, setPlace] = useState<string>("");
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [vouchers, setVouchers] = useState<Voucher[]>([]);
     const [voucherNote, setVoucherNote] = useState<string>("");
@@ -37,7 +36,6 @@ const AddRealizeVoucher: React.FC<AddRealizeVoucherProps> = ({ onUpdate }) => {
                 amount,
                 note,
                 howManyDaysAvailable,
-                place,
             });
             const newVoucher: Voucher = response.data;
             window.alert (`Voucher dodany pomyślnie! Kod vouchera: ${newVoucher.voucherCode}.`);
@@ -155,6 +153,7 @@ const AddRealizeVoucher: React.FC<AddRealizeVoucherProps> = ({ onUpdate }) => {
                             <option value="">Wybierz metodę</option>
                             <option value="Blik">Blik</option>
                             <option value="Gotówka">Gotówka</option>
+                            <option value="Karta">Karta</option>
                         </select>
                     </div>
 
@@ -197,18 +196,6 @@ const AddRealizeVoucher: React.FC<AddRealizeVoucherProps> = ({ onUpdate }) => {
                         />
                     </div>
 
-                    <div className="form-group">
-                        <label>Miejsce:</label>
-                        <select
-                            value={place}
-                            onChange={(e) => setPlace(e.target.value)}
-                            required
-                        >
-                            <option value="">Wybierz miejsce</option>
-                            <option value="Ostrołęka">Ostrołęka</option>
-                            <option value="Mława">Mława</option>
-                        </select>
-                    </div>
 
                     <div className="form-group">
                         <label>Email klienta</label>
@@ -257,7 +244,6 @@ const AddRealizeVoucher: React.FC<AddRealizeVoucherProps> = ({ onUpdate }) => {
                                 <th>Pozostała kwota</th>
                                 <th>Notatka</th>
                                 <th>Ważny do</th>
-                                <th>Miejsce</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -271,7 +257,6 @@ const AddRealizeVoucher: React.FC<AddRealizeVoucherProps> = ({ onUpdate }) => {
                                     <td>{voucherItem.availableAmount}</td>
                                     <td>{voucherItem.note}</td>
                                     <td>{new Date(voucherItem.validUntil).toLocaleDateString()}</td>
-                                    <td>{voucherItem.place}</td>
                                 </tr>
                             ))}
                             </tbody>
@@ -305,7 +290,6 @@ const AddRealizeVoucher: React.FC<AddRealizeVoucherProps> = ({ onUpdate }) => {
                             <th>Pozostała kwota</th>
                             <th>Notatka</th>
                             <th>Ważny do</th>
-                            <th>Miejsce</th>
                             <th>Kwota do realizacji</th>
                             <th>Akcja</th>
                         </tr>
@@ -321,7 +305,6 @@ const AddRealizeVoucher: React.FC<AddRealizeVoucherProps> = ({ onUpdate }) => {
                                 <td>{voucherItem.availableAmount}</td>
                                 <td>{voucherItem.note}</td>
                                 <td>{new Date(voucherItem.validUntil).toLocaleDateString()}</td>
-                                <td>{voucherItem.place}</td>
                                 <td>
                                     <input
                                         type="number"

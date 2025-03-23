@@ -11,8 +11,8 @@
 .search-voucher-section h2 {
     text-align: center;
     margin-bottom: 20px;
-    font-size: 2rem;
-    color: var(--table-list-head);
+    font-size: var(--title-font-size);
+    color: var(--table-tr-color);
 }
 
 .search-form {

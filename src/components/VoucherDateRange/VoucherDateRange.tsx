@@ -6,7 +6,6 @@ import "./VoucherDateRange.css";
 const VoucherDateRange: React.FC = () => {
     const [startDate, setStartDate] = useState<string>("");
     const [endDate, setEndDate] = useState<string>("");
-    const [placeFilter, setPlaceFilter] = useState<string>("");
     const [realizedFilter, setRealizedFilter] = useState<string>("");
     const [vouchers, setVouchers] = useState<Voucher[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
@@ -19,7 +18,6 @@ const VoucherDateRange: React.FC = () => {
             setError("Proszę wybrać obie daty.");
             return;
         }
-        // Konwersja dat na składniki: dzień, miesiąc, rok
         const start = new Date(startDate);
         const end = new Date(endDate);
         const day1 = start.getDate();
@@ -34,11 +32,6 @@ const VoucherDateRange: React.FC = () => {
             const response = await getVoucherTwoDates(day1, month1, year1, day2, month2, year2);
             let filtered: Voucher[] = response.data;
 
-            // Filtrowanie po "miejsce"
-            if (placeFilter) {
-                filtered = filtered.filter((voucher: Voucher) => voucher.place === placeFilter);
-            }
-            // Filtrowanie po statusie "zrealizowany"
             if (realizedFilter) {
                 filtered = filtered.filter((voucher: Voucher) => voucher.realized === realizedFilter);
             }
@@ -73,17 +66,7 @@ const VoucherDateRange: React.FC = () => {
                         required
                     />
                 </div>
-                <div className="form-group">
-                    <label>Miejsce:</label>
-                    <select
-                        value={placeFilter}
-                        onChange={(e) => setPlaceFilter(e.target.value)}
-                    >
-                        <option value="">Wszystkie</option>
-                        <option value="Ostrołęka">Ostrołęka</option>
-                        <option value="Mława">Mława</option>
-                    </select>
-                </div>
+
                 <div className="form-group">
                     <label>Zrealizowany:</label>
                     <select
@@ -114,7 +97,6 @@ const VoucherDateRange: React.FC = () => {
                             <th>Pozostała kwota</th>
                             <th>Notatka</th>
                             <th>Ważny do</th>
-                            <th>Miejsce</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -130,7 +112,6 @@ const VoucherDateRange: React.FC = () => {
                                 <td>{voucher.availableAmount} zł</td>
                                 <td>{voucher.note}</td>
                                 <td>{new Date(voucher.validUntil).toLocaleDateString()}</td>
-                                <td>{voucher.place}</td>
                             </tr>
                         ))}
                         </tbody>
