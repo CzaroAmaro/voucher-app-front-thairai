@@ -5,19 +5,12 @@
     background-color: var(--background-color-2);
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    font-size:var(--table-font);
 
 }
 .table-wrapper{
     overflow-y: auto;
     max-height: 760px;
-}
-
-
-.heading {
-    text-align: center;
-    margin-bottom: 20px;
-    font-size: 2rem;
-    color: var(--table-tr-color);
 }
 
 .table-container {
