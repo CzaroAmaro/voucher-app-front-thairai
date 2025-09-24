@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import "./VoucherList.css";
 import { getVouchers, getVoucherById, getVoucherByPartOfCode } from "../../services/voucherService";
 import { Voucher } from "../../models/Voucher";
@@ -6,13 +6,21 @@ import VoucherSort from "../VoucherSort/VoucherSort";
 import VoucherModal from "../VoucherModal/VoucherModal";
 
 const VouchersList: React.FC = () => {
-    const [vouchers, setVouchers] = useState<Voucher[]>([]);
+    // --- ZMIANA: Przechowujemy wszystkie vouchery w oddzielnym stanie ---
+    const [allVouchers, setAllVouchers] = useState<Voucher[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+
+    // --- ZMIANA: Domyślne sortowanie od najnowszych (desc) po ID ---
     const [sortColumn, setSortColumn] = useState<string>("id");
-    const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+    const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
+
     const [selectedVoucher, setSelectedVoucher] = useState<Voucher | null>(null);
     const [searchTerm, setSearchTerm] = useState<string>("");
+
+    // --- NOWOŚĆ: Stan dla paginacji ---
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage] = useState(100); // Możesz zmienić tę wartość
 
     useEffect(() => {
         loadVouchers();
@@ -22,8 +30,7 @@ const VouchersList: React.FC = () => {
         setLoading(true);
         try {
             const response = await getVouchers();
-            const sorted = response.data.sort((a: Voucher, b: Voucher) => b.id - a.id);
-            setVouchers(sorted);
+            setAllVouchers(response.data); // Ustawiamy główną listę
             setError(null);
         } catch (err) {
             setError("Nie udało się pobrać voucherów");
@@ -33,6 +40,30 @@ const VouchersList: React.FC = () => {
         }
     };
 
+    // --- ZMIANA: Logika sortowania przeniesiona do useMemo dla optymalizacji ---
+    const sortedVouchers = useMemo(() => {
+        return [...allVouchers].sort((a, b) => {
+            const aValue = a[sortColumn as keyof Voucher];
+            const bValue = b[sortColumn as keyof Voucher];
+
+            if (aValue === null || aValue === undefined) return 1;
+            if (bValue === null || bValue === undefined) return -1;
+
+            if (aValue < bValue) return sortDirection === "asc" ? -1 : 1;
+            if (aValue > bValue) return sortDirection === "asc" ? 1 : -1;
+            return 0;
+        });
+    }, [allVouchers, sortColumn, sortDirection]);
+
+    // --- NOWOŚĆ: Logika wycinania voucherów dla bieżącej strony ---
+    const currentVouchers = useMemo(() => {
+        const indexOfLastItem = currentPage * itemsPerPage;
+        const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+        return sortedVouchers.slice(indexOfFirstItem, indexOfLastItem);
+    }, [sortedVouchers, currentPage, itemsPerPage]);
+
+    const totalPages = Math.ceil(sortedVouchers.length / itemsPerPage);
+
     const handleSearch = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!searchTerm) {
@@ -41,16 +72,19 @@ const VouchersList: React.FC = () => {
         }
         setLoading(true);
         try {
+            let response;
             if (/^\d+$/.test(searchTerm)) {
-                const response = await getVoucherById(Number(searchTerm));
-                setVouchers([response.data]);
+                response = await getVoucherById(Number(searchTerm));
+                setAllVouchers([response.data]);
             } else {
-                const response = await getVoucherByPartOfCode(searchTerm);
-                setVouchers(response.data);
+                response = await getVoucherByPartOfCode(searchTerm);
+                setAllVouchers(response.data);
             }
+            setCurrentPage(1); // Resetuj do pierwszej strony po wyszukiwaniu
             setError(null);
         } catch (err) {
             setError("Voucher o podanym kryterium nie został znaleziony");
+            setAllVouchers([]); // Wyczyść wyniki w razie błędu
             console.error("Błąd wyszukiwania:", err);
         } finally {
             setLoading(false);
@@ -59,6 +93,7 @@ const VouchersList: React.FC = () => {
 
     const handleReset = () => {
         setSearchTerm("");
+        setCurrentPage(1); // Resetuj stronę
         loadVouchers();
     };
 
@@ -71,32 +106,20 @@ const VouchersList: React.FC = () => {
     };
 
     const updateVoucher = (updatedVoucher: Voucher) => {
-        setVouchers((prev) =>
+        setAllVouchers((prev) => // Aktualizuj główną listę
             prev.map((v) =>
                 v.voucherCode === updatedVoucher.voucherCode ? updatedVoucher : v
             )
         );
     };
 
+    // --- ZMIANA: handleSort teraz tylko zmienia stan, resztę robi useMemo ---
     const handleSort = (column: string) => {
         const isAsc = sortColumn === column && sortDirection === "asc";
         const newDirection = isAsc ? "desc" : "asc";
         setSortDirection(newDirection);
         setSortColumn(column);
-
-        const sortedVouchers = [...vouchers].sort((a, b) => {
-            const aValue = a[column as keyof Voucher];
-            const bValue = b[column as keyof Voucher];
-
-            if (aValue === null || aValue === undefined) return 1;
-            if (bValue === null || bValue === undefined) return -1;
-
-            if (aValue < bValue) return newDirection === "asc" ? -1 : 1;
-            if (aValue > bValue) return newDirection === "asc" ? 1 : -1;
-            return 0;
-        });
-
-        setVouchers(sortedVouchers);
+        setCurrentPage(1); // Zawsze wracaj do pierwszej strony po zmianie sortowania
     };
 
     if (loading) return <p>Ładowanie danych...</p>;
@@ -106,12 +129,13 @@ const VouchersList: React.FC = () => {
         <div className="vouchers-container">
             <h2 className="heading">Lista Voucherów</h2>
             <form onSubmit={handleSearch} className="search-form">
+                {/* ... (formularz bez zmian) ... */}
                 <input
                     id="search"
                     type="text"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    placeholder=" 🔍︎ Wyszukaj voucher"
+                    placeholder="Wpisz ID lub fragment kodu"
                 />
                 <button type="submit">Szukaj</button>
                 <button type="button" onClick={handleReset}>
@@ -122,92 +146,27 @@ const VouchersList: React.FC = () => {
                 <table className="table-container">
                     <thead>
                     <tr>
-                        <VoucherSort
-                            column="id"
-                            label="ID"
-                            sortColumn={sortColumn}
-                            sortDirection={sortDirection}
-                            onSort={handleSort}
-                        />
-                        <VoucherSort
-                            column="voucherCode"
-                            label="Kod vouchera"
-                            sortColumn={sortColumn}
-                            sortDirection={sortDirection}
-                            onSort={handleSort}
-                        />
-                        <VoucherSort
-                            column="saleDate"
-                            label="Data sprzedaży"
-                            sortColumn={sortColumn}
-                            sortDirection={sortDirection}
-                            onSort={handleSort}
-                        />
-                        <VoucherSort
-                            column="paymentMethod"
-                            label="Metoda płatności"
-                            sortColumn={sortColumn}
-                            sortDirection={sortDirection}
-                            onSort={handleSort}
-                        />
-                        <VoucherSort
-                            column="amount"
-                            label="Kwota"
-                            sortColumn={sortColumn}
-                            sortDirection={sortDirection}
-                            onSort={handleSort}
-                        />
-                        <VoucherSort
-                            column="realized"
-                            label="Zrealizowany"
-                            sortColumn={sortColumn}
-                            sortDirection={sortDirection}
-                            onSort={handleSort}
-                        />
-                        <VoucherSort
-                            column="realizedDate"
-                            label="Data realizacji"
-                            sortColumn={sortColumn}
-                            sortDirection={sortDirection}
-                            onSort={handleSort}
-                        />
-                        <VoucherSort
-                            column="note"
-                            label="Notatka"
-                            sortColumn={sortColumn}
-                            sortDirection={sortDirection}
-                            onSort={handleSort}
-                        />
-                        <VoucherSort
-                            column="availableAmount"
-                            label="Pozostała kwota"
-                            sortColumn={sortColumn}
-                            sortDirection={sortDirection}
-                            onSort={handleSort}
-                        />
-                        <VoucherSort
-                            column="validUntil"
-                            label="Ważny do"
-                            sortColumn={sortColumn}
-                            sortDirection={sortDirection}
-                            onSort={handleSort}
-                        />
-                        <VoucherSort
-                            column="place"
-                            label="Miejsce"
-                            sortColumn={sortColumn}
-                            sortDirection={sortDirection}
-                            onSort={handleSort}
-                        />
+                        {/* ... (nagłówki tabeli bez zmian) ... */}
+                        <VoucherSort column="id" label="ID" sortColumn={sortColumn} sortDirection={sortDirection} onSort={handleSort} />
+                        <VoucherSort column="voucherCode" label="Kod vouchera" sortColumn={sortColumn} sortDirection={sortDirection} onSort={handleSort} />
+                        <VoucherSort column="saleDate" label="Data sprzedaży" sortColumn={sortColumn} sortDirection={sortDirection} onSort={handleSort} />
+                        <VoucherSort column="paymentMethod" label="Metoda płatności" sortColumn={sortColumn} sortDirection={sortDirection} onSort={handleSort} />
+                        <VoucherSort column="amount" label="Kwota" sortColumn={sortColumn} sortDirection={sortDirection} onSort={handleSort} />
+                        <VoucherSort column="realized" label="Zrealizowany" sortColumn={sortColumn} sortDirection={sortDirection} onSort={handleSort} />
+                        <VoucherSort column="realizedDate" label="Data realizacji" sortColumn={sortColumn} sortDirection={sortDirection} onSort={handleSort} />
+                        <VoucherSort column="note" label="Notatka" sortColumn={sortColumn} sortDirection={sortDirection} onSort={handleSort} />
+                        <VoucherSort column="availableAmount" label="Pozostała kwota" sortColumn={sortColumn} sortDirection={sortDirection} onSort={handleSort} />
+                        <VoucherSort column="validUntil" label="Ważny do" sortColumn={sortColumn} sortDirection={sortDirection} onSort={handleSort} />
+                        <VoucherSort column="place" label="Miejsce" sortColumn={sortColumn} sortDirection={sortDirection} onSort={handleSort} />
                     </tr>
                     </thead>
                     <tbody>
-                    {vouchers.map((voucher) => (
+                    {/* --- ZMIANA: Mapujemy po `currentVouchers` zamiast po wszystkich --- */}
+                    {currentVouchers.map((voucher) => (
                         <tr
                             key={voucher.voucherCode}
                             onClick={() => handleRowClick(voucher)}
                             style={{ cursor: "pointer" }}
-                            className={voucher.realized === "Tak" ? "realized" : ""}
                         >
                             <td>{voucher.id !== null ? voucher.id : "Brak"}</td>
                             <td>{voucher.voucherCode}</td>
@@ -226,13 +185,27 @@ const VouchersList: React.FC = () => {
                 </table>
             </div>
 
+            {/* --- NOWOŚĆ: Komponent paginacji --- */}
+            <div className="pagination-controls">
+                <button onClick={() => setCurrentPage(p => Math.max(p - 1, 1))} disabled={currentPage === 1}>
+                    Poprzednia
+                </button>
+                <span>
+                    Strona {currentPage} z {totalPages}
+                </span>
+                <button onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))} disabled={currentPage === totalPages}>
+                    Następna
+                </button>
+            </div>
+
+
             {selectedVoucher && (
                 <VoucherModal
                     voucher={selectedVoucher}
                     onClose={closeModal}
                     onUpdate={updateVoucher}
                     onDelete={(id: number) =>
-                        setVouchers((prev) => prev.filter((v) => v.id !== id))
+                        setAllVouchers((prev) => prev.filter((v) => v.id !== id))
                     }
                 />
             )}
