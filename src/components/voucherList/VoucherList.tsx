@@ -6,41 +6,37 @@ import VoucherSort from "../VoucherSort/VoucherSort";
 import VoucherModal from "../VoucherModal/VoucherModal";
 
 const VouchersList: React.FC = () => {
-    // --- ZMIANA: Przechowujemy wszystkie vouchery w oddzielnym stanie ---
     const [allVouchers, setAllVouchers] = useState<Voucher[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    // --- ZMIANA: Domyślne sortowanie od najnowszych (desc) po ID ---
     const [sortColumn, setSortColumn] = useState<string>("id");
     const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
 
     const [selectedVoucher, setSelectedVoucher] = useState<Voucher | null>(null);
     const [searchTerm, setSearchTerm] = useState<string>("");
 
-    // --- NOWOŚĆ: Stan dla paginacji ---
     const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage] = useState(100); // Możesz zmienić tę wartość
+    const [itemsPerPage] = useState(100);
 
     useEffect(() => {
-        loadVouchers();
+        loadVouchers()
     }, []);
 
     const loadVouchers = async () => {
-        setLoading(true);
+        setLoading(true)
         try {
-            const response = await getVouchers();
+            const response = await getVouchers()
             setAllVouchers(response.data); // Ustawiamy główną listę
-            setError(null);
+            setError(null)
         } catch (err) {
-            setError("Nie udało się pobrać voucherów");
-            console.error("Błąd:", err);
+            setError("Nie udało się pobrać voucherów")
+            console.error("Błąd:", err)
         } finally {
-            setLoading(false);
+            setLoading(false)
         }
     };
 
-    // --- ZMIANA: Logika sortowania przeniesiona do useMemo dla optymalizacji ---
     const sortedVouchers = useMemo(() => {
         return [...allVouchers].sort((a, b) => {
             const aValue = a[sortColumn as keyof Voucher];
@@ -55,7 +51,6 @@ const VouchersList: React.FC = () => {
         });
     }, [allVouchers, sortColumn, sortDirection]);
 
-    // --- NOWOŚĆ: Logika wycinania voucherów dla bieżącej strony ---
     const currentVouchers = useMemo(() => {
         const indexOfLastItem = currentPage * itemsPerPage;
         const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -80,11 +75,11 @@ const VouchersList: React.FC = () => {
                 response = await getVoucherByPartOfCode(searchTerm);
                 setAllVouchers(response.data);
             }
-            setCurrentPage(1); // Resetuj do pierwszej strony po wyszukiwaniu
+            setCurrentPage(1);
             setError(null);
         } catch (err) {
             setError("Voucher o podanym kryterium nie został znaleziony");
-            setAllVouchers([]); // Wyczyść wyniki w razie błędu
+            setAllVouchers([])
             console.error("Błąd wyszukiwania:", err);
         } finally {
             setLoading(false);
@@ -106,20 +101,19 @@ const VouchersList: React.FC = () => {
     };
 
     const updateVoucher = (updatedVoucher: Voucher) => {
-        setAllVouchers((prev) => // Aktualizuj główną listę
+        setAllVouchers((prev) =>
             prev.map((v) =>
                 v.voucherCode === updatedVoucher.voucherCode ? updatedVoucher : v
             )
         );
     };
 
-    // --- ZMIANA: handleSort teraz tylko zmienia stan, resztę robi useMemo ---
     const handleSort = (column: string) => {
         const isAsc = sortColumn === column && sortDirection === "asc";
         const newDirection = isAsc ? "desc" : "asc";
         setSortDirection(newDirection);
         setSortColumn(column);
-        setCurrentPage(1); // Zawsze wracaj do pierwszej strony po zmianie sortowania
+        setCurrentPage(1);
     };
 
     if (loading) return <p>Ładowanie danych...</p>;
@@ -129,7 +123,6 @@ const VouchersList: React.FC = () => {
         <div className="vouchers-container">
             <h2 className="heading">Lista Voucherów</h2>
             <form onSubmit={handleSearch} className="search-form">
-                {/* ... (formularz bez zmian) ... */}
                 <input
                     id="search"
                     type="text"
@@ -146,7 +139,6 @@ const VouchersList: React.FC = () => {
                 <table className="table-container">
                     <thead>
                     <tr>
-                        {/* ... (nagłówki tabeli bez zmian) ... */}
                         <VoucherSort column="id" label="ID" sortColumn={sortColumn} sortDirection={sortDirection} onSort={handleSort} />
                         <VoucherSort column="voucherCode" label="Kod vouchera" sortColumn={sortColumn} sortDirection={sortDirection} onSort={handleSort} />
                         <VoucherSort column="saleDate" label="Data sprzedaży" sortColumn={sortColumn} sortDirection={sortDirection} onSort={handleSort} />
@@ -161,7 +153,6 @@ const VouchersList: React.FC = () => {
                     </tr>
                     </thead>
                     <tbody>
-                    {/* --- ZMIANA: Mapujemy po `currentVouchers` zamiast po wszystkich --- */}
                     {currentVouchers.map((voucher) => (
                         <tr
                             key={voucher.voucherCode}
@@ -185,8 +176,7 @@ const VouchersList: React.FC = () => {
                 </table>
             </div>
 
-            {/* --- NOWOŚĆ: Komponent paginacji --- */}
-            <div className="pagination-controls">
+            <div className="modal-buttons">
                 <button onClick={() => setCurrentPage(p => Math.max(p - 1, 1))} disabled={currentPage === 1}>
                     Poprzednia
                 </button>

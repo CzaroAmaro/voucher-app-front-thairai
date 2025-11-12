@@ -17,8 +17,8 @@ interface AddRealizeVoucherProps {
 const AddRealizeVoucher: React.FC<AddRealizeVoucherProps> = ({ onUpdate }) => {
     const [paymentMethod, setPaymentMethod] = useState<string>("");
     const [amount, setAmount] = useState<number>(0);
-    const [note, setNote] = useState<string>("");
-    const [howManyDaysAvailable, setHowManyDaysAvailable] = useState<number>(0);
+    const [note, setNote] = useState<string>("Usługa masażu");
+    const [howManyDaysAvailable, setHowManyDaysAvailable] = useState<number>(180);
     const [email, setEmail] = useState<string>("");
     const [userName, setUserName] = useState("");
     const [place, setPlace] = useState<string>("");
@@ -69,8 +69,8 @@ const AddRealizeVoucher: React.FC<AddRealizeVoucherProps> = ({ onUpdate }) => {
             }
             setPaymentMethod("");
             setAmount(0);
-            setNote("");
-            setHowManyDaysAvailable(0);
+            setNote("Usługa masażu");
+            setHowManyDaysAvailable(180);
             setEmail("");
             setUserName("");
             setVoucherNote("");
@@ -214,6 +214,7 @@ const AddRealizeVoucher: React.FC<AddRealizeVoucherProps> = ({ onUpdate }) => {
                         >
                             <option value="">Wybierz miejsce</option>
                             <option value="Ostrołęka">Ostrołęka</option>
+                            <option value="Ostrołęka-2">Ostrołęka-2</option>
                             <option value="Mława">Mława</option>
                         </select>
                     </div>
