@@ -61,7 +61,7 @@ export const editVoucher = (
         paymentMethod: string;
         amount: number;
         realized: string;
-        realizedDate: string;
+        realizedDate: string | Date;
         note: string;
         availableAmount: number;
     }

@@ -32,7 +32,7 @@ const VoucherModal: React.FC<VoucherModalProps> = ({ voucher, onClose, onUpdate,
     const [editNote, setEditNote] = useState<string>(voucher.note);
     const [editAvailableAmount, setEditAvailableAmount] = useState<number>(voucher.availableAmount);
     // Checkbox do cofnięcia statusu – dostępny tylko, gdy voucher jest zrealizowany
-    const [markAsNotRealized, setMarkAsNotRealized] = useState<boolean>(false);
+    const [markAsNotRealized] = useState<boolean>(false);
 
     const handleRealize = async (e: React.FormEvent) => {
         e.preventDefault();
