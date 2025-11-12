@@ -7,8 +7,8 @@ import "./AddVoucher.css";
 const AddVoucher: React.FC = () => {
     const [paymentMethod, setPaymentMethod] = useState("");
     const [amount, setAmount] = useState<number>(0);
-    const [note, setNote] = useState("");
-    const [howManyDaysAvailable, setHowManyDaysAvailable] = useState<number>(0);
+    const [note, setNote] = useState("Usługa masażu");
+    const [howManyDaysAvailable, setHowManyDaysAvailable] = useState<number>(180);
     const [place, setPlace] = useState<string>("");
     const [email, setEmail] = useState("");
     const [userName, setUserName] = useState("");
@@ -54,8 +54,8 @@ const AddVoucher: React.FC = () => {
             }
             setPaymentMethod("");
             setAmount(0);
-            setNote("");
-            setHowManyDaysAvailable(0);
+            setNote("Usługa masażu");
+            setHowManyDaysAvailable(180);
             setEmail("");
             setUserName("");
             setVoucherNote("");
@@ -132,6 +132,7 @@ const AddVoucher: React.FC = () => {
                     >
                         <option value="">Wybierz miejsce</option>
                         <option value="Ostrołęka">Ostrołęka</option>
+                        <option value="Ostrołęka-2">Ostrołęka-2</option>
                         <option value="Mława">Mława</option>
                     </select>
                 </div>
