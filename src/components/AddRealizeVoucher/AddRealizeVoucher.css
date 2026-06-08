@@ -1,137 +1,382 @@
-.search-voucher-section {
-    max-width: 1580px;
+/* ============================================================
+   AddRealizeVoucher — czysty, nowoczesny styl (SaaS).
+   Wszystko zakresowane pod .ar-page, aby nie kolidowało
+   z globalnymi klasami innych komponentów.
+   ============================================================ */
+
+.ar-page {
+    /* Lokalne tokeny — dziedziczą po motywie (jasny/ciemny). */
+    --ar-accent: #2563eb;
+    --ar-accent-hover: #1d4ed8;
+    --ar-on-accent: #ffffff;
+    --ar-success: #16a34a;
+    --ar-warn: #d97706;
+    --ar-danger: #dc2626;
+    --ar-radius: 16px;
+    --ar-radius-sm: 10px;
+    --ar-gap: 18px;
+    --ar-border: color-mix(in srgb, var(--primary-text-color) 14%, transparent);
+    --ar-muted: color-mix(in srgb, var(--primary-text-color) 60%, transparent);
+    --ar-field-bg: var(--background-color);
+    --ar-shadow: 0 10px 30px -12px rgba(0, 0, 0, 0.35);
+
+    max-width: 960px;
     margin: 0 auto;
-    padding: 20px;
-    background-color: var(--background-color-2);
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    margin-top: 30px;
+    color: var(--primary-text-color);
+    animation: ar-fade-in 0.35s ease both;
 }
 
-.search-voucher-section h2 {
-    text-align: center;
-    margin-bottom: 20px;
-    font-size: var(--title-font-size);
-    color: var(--table-tr-color);
+@keyframes ar-fade-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
 }
 
-.search-form {
-    display: flex;
-    align-items: center;
-    margin-bottom: 15px;
+/* ---------- Nagłówek ---------- */
+.ar-header {
+    margin-bottom: 22px;
+}
+.ar-header h1 {
+    font-size: clamp(1.6rem, 2.4vw, 2rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+.ar-header p {
+    margin-top: 4px;
+    color: var(--ar-muted);
+    font-size: 0.95rem;
 }
 
-.search-form input {
-    padding: 5px 10px;
-    margin-right: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-}
-
-.search-form button {
-    padding: 8px 20px;
-    border: none;
-    background-color: #007bff;
-    color: #fff;
-    cursor: pointer;
-    border-radius: 15px;
-    transition: background-color 0.3s ease;
-}
-
-.search-form button:hover {
-    background-color: #0056b3;
-}
-
-.voucher-table {
-    width: 100%;
-    border-collapse: collapse;
-    overflow: hidden;
-    border-radius: 8px;
-    margin-top: 20px;
-}
-
-.voucher-table thead {
-    background: var(--table-list-head);
-}
-
-.voucher-table th,
-.voucher-table td {
-    padding: 16px 20px;
-    text-align: left;
-    border-bottom: 1px solid var(--table-list-border);
-}
-
-.voucher-table th {
-    font-weight: 600;
-    color: #ffffff;
-}
-
-.voucher-table tbody tr {
-    color: var(--table-tr-color);
-    background-color: var(--table-list-dark-bg);
-    transition: background-color 0.3s ease;
-}
-
-.voucher-table tbody tr:nth-child(even) {
-    background-color: var(--table-list-light-bg);
-}
-
-.voucher-table tbody tr:hover {
-    background-color: var(--table-list-hover-bg);
-}
-
-.voucher-table input[type="number"] {
-    width: 80px;
+/* ---------- Zakładki (segmented control) ---------- */
+.ar-tabs {
+    display: inline-flex;
+    gap: 4px;
     padding: 5px;
-    border: 1px solid var(--table-list-border);
-    border-radius: 4px;
+    margin-bottom: 22px;
+    background: var(--background-color-2);
+    border: 1px solid var(--ar-border);
+    border-radius: 999px;
 }
-
-.voucher-table button {
-    padding: 8px 15px;
-    background-color: #007bff;
+.ar-tab {
+    appearance: none;
     border: none;
-    border-radius: 15px;
-    color: #fff;
+    background: transparent;
+    color: var(--ar-muted);
+    font: inherit;
+    font-weight: 600;
+    padding: 9px 26px;
+    border-radius: 999px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+.ar-tab:hover {
+    color: var(--primary-text-color);
+}
+.ar-tab.is-active {
+    background: var(--ar-accent);
+    color: var(--ar-on-accent);
+    box-shadow: 0 4px 12px -4px color-mix(in srgb, var(--ar-accent) 70%, transparent);
 }
 
-.voucher-table button:hover {
-    background-color: #0b408f;
+/* ---------- Karta ---------- */
+.ar-card {
+    background: var(--background-color-2);
+    border: 1px solid var(--ar-border);
+    border-radius: var(--ar-radius);
+    box-shadow: var(--ar-shadow);
+    padding: clamp(20px, 3vw, 32px);
 }
-.voucher-form {
+
+/* ---------- Formularz dodawania ---------- */
+.ar-form {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--ar-gap);
+}
+.ar-field {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    min-width: 0;
+}
+.ar-field--full {
+    grid-column: 1 / -1;
+}
+.ar-field label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--ar-muted);
+}
+
+.ar-field input,
+.ar-field select,
+.ar-search input {
+    width: 100%;
+    padding: 11px 14px;
+    font: inherit;
+    color: var(--primary-text-color);
+    background: var(--ar-field-bg);
+    border: 1px solid var(--ar-border);
+    border-radius: var(--ar-radius-sm);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.ar-field input::placeholder,
+.ar-search input::placeholder {
+    color: color-mix(in srgb, var(--primary-text-color) 38%, transparent);
+}
+.ar-field input:focus,
+.ar-field select:focus,
+.ar-search input:focus {
+    outline: none;
+    border-color: var(--ar-accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--ar-accent) 22%, transparent);
+}
+
+/* ---------- Separator z etykietą ---------- */
+.ar-divider {
     display: flex;
     align-items: center;
-    gap: 10px;
-    margin-bottom: 20px;
+    gap: 12px;
+    margin-top: 4px;
+    color: var(--ar-muted);
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
 }
-
-.voucher-form input[type="text"] {
+.ar-divider::after {
+    content: "";
     flex: 1;
-    padding: 8px 12px;
-    font-size: 1rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    transition: border-color 0.3s ease;
+    height: 1px;
+    background: var(--ar-border);
 }
 
-.voucher-form input[type="text"]:focus {
-    outline: none;
-    border-color: var(--foreground-color);
+/* ---------- Akcje / przyciski ---------- */
+.ar-actions {
+    display: flex;
+    justify-content: flex-end;
 }
-
-.voucher-form button {
-    padding: 8px 20px;
-    background-color: #007bff;
-    color: #fff;
+.ar-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    padding: 11px 24px;
+    font: inherit;
+    font-weight: 600;
     border: none;
-    border-radius: 15px;
-    font-size: 1rem;
+    border-radius: var(--ar-radius-sm);
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.2s ease, transform 0.08s ease, opacity 0.2s ease;
+}
+.ar-btn:active {
+    transform: translateY(1px);
+}
+.ar-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+.ar-btn--primary {
+    background: var(--ar-accent);
+    color: var(--ar-on-accent);
+}
+.ar-btn--primary:not(:disabled):hover {
+    background: var(--ar-accent-hover);
 }
 
-.voucher-form button:hover {
-    background-color: #0056b3;
+/* ---------- Spinner ---------- */
+.ar-spinner {
+    width: 15px;
+    height: 15px;
+    border: 2px solid color-mix(in srgb, var(--ar-on-accent) 45%, transparent);
+    border-top-color: var(--ar-on-accent);
+    border-radius: 50%;
+    animation: ar-spin 0.7s linear infinite;
+}
+@keyframes ar-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ---------- Komunikaty ---------- */
+.ar-message {
+    margin: 4px 0 0;
+    padding: 11px 14px;
+    border-radius: var(--ar-radius-sm);
+    font-size: 0.9rem;
+}
+.ar-message--error {
+    color: var(--ar-danger);
+    background: color-mix(in srgb, var(--ar-danger) 12%, transparent);
+    border: 1px solid color-mix(in srgb, var(--ar-danger) 35%, transparent);
+}
+.ar-empty {
+    margin-top: 16px;
+    text-align: center;
+    color: var(--ar-muted);
+}
+
+/* ---------- Potwierdzenie dodania ---------- */
+.ar-receipt {
+    margin-top: 24px;
+    padding: 18px;
+    background: var(--ar-field-bg);
+    border: 1px solid var(--ar-border);
+    border-radius: var(--ar-radius-sm);
+    animation: ar-fade-in 0.3s ease both;
+}
+.ar-receipt__head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+.ar-receipt__grid,
+.ar-voucher__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 14px 18px;
+    margin: 0;
+}
+.ar-receipt__grid dt,
+.ar-voucher__grid dt {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--ar-muted);
+    margin-bottom: 3px;
+}
+.ar-receipt__grid dd,
+.ar-voucher__grid dd {
+    margin: 0;
+    font-size: 0.98rem;
+    font-weight: 500;
+}
+
+/* ---------- Wyszukiwarka ---------- */
+.ar-search {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+.ar-search input {
+    flex: 1;
+}
+
+/* ---------- Wyniki / karty voucherów ---------- */
+.ar-results {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+.ar-voucher {
+    padding: 18px;
+    background: var(--ar-field-bg);
+    border: 1px solid var(--ar-border);
+    border-radius: var(--ar-radius-sm);
+    animation: ar-fade-in 0.3s ease both;
+}
+.ar-voucher__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+.ar-voucher__note {
+    grid-column: 1 / -1;
+}
+.ar-strong {
+    font-weight: 700 !important;
+    color: var(--ar-accent);
+}
+
+.ar-code {
+    font-family: ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace;
+    font-size: 1.05rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+}
+
+/* ---------- Sekcja realizacji w karcie ---------- */
+.ar-voucher__redeem {
+    display: flex;
+    align-items: flex-end;
+    gap: 14px;
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px solid var(--ar-border);
+}
+.ar-voucher__redeem .ar-field {
+    flex: 1;
+}
+.ar-voucher__redeem .ar-btn {
+    white-space: nowrap;
+}
+.ar-voucher__done {
+    margin: 18px 0 0;
+    padding-top: 16px;
+    border-top: 1px solid var(--ar-border);
+    color: var(--ar-muted);
+    font-size: 0.92rem;
+}
+
+/* ---------- Znaczniki statusu ---------- */
+.ar-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 12px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    border-radius: 999px;
+    white-space: nowrap;
+}
+.ar-badge--success {
+    color: var(--ar-success);
+    background: color-mix(in srgb, var(--ar-success) 15%, transparent);
+}
+.ar-badge--warn {
+    color: var(--ar-warn);
+    background: color-mix(in srgb, var(--ar-warn) 16%, transparent);
+}
+.ar-badge--muted {
+    color: var(--ar-muted);
+    background: color-mix(in srgb, var(--primary-text-color) 10%, transparent);
+}
+
+/* ---------- Responsywność ---------- */
+@media (max-width: 640px) {
+    .ar-form {
+        grid-template-columns: 1fr;
+    }
+    .ar-tabs {
+        display: flex;
+        width: 100%;
+    }
+    .ar-tab {
+        flex: 1;
+        text-align: center;
+    }
+    .ar-search {
+        flex-direction: column;
+    }
+    .ar-search .ar-btn {
+        width: 100%;
+    }
+    .ar-voucher__redeem {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .ar-voucher__redeem .ar-btn {
+        width: 100%;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ar-page,
+    .ar-receipt,
+    .ar-voucher {
+        animation: none;
+    }
+    .ar-spinner {
+        animation-duration: 1.4s;
+    }
 }

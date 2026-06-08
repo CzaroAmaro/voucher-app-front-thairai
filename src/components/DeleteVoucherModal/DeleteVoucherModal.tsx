@@ -25,7 +25,7 @@ const DeleteVoucherModal: React.FC<DeleteVoucherModalProps> = ({voucher, onClose
                 }
                 onClose();
                 window.alert("Voucher usunięty pomyślnie!");
-            }catch(err: any){
+            }catch(err){
                 console.error("Błąd przy usuwaniu vouchera:", err);
                 setError("Wystąpił błąd podczas usuwania vouchera.");
             }

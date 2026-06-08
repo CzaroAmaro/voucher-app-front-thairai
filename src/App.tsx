@@ -5,8 +5,7 @@ import Navbar from "./components/navbar/Navbar.tsx";
 import AddVoucher from "./components/AddVoucher/AddVoucher.tsx";
 import DeletedVoucher from "./components/DeletedVoucher/DeletedVoucher.tsx";
 import NotificationList from "./components/NotificationList/NotificationList.tsx";
-import ReportGenerator from "./components/ReportGenerator/ReportGenerator.tsx";
-import ReportListGenerator from "./components/ReportListGenerator/ReportListGenerator.tsx";
+import Reports from "./components/Reports/Reports.tsx";
 import Login from "./components/Login/Login.tsx";
 import "./App.css";
 import AddRealizeVoucher from "./components/AddRealizeVoucher/AddRealizeVoucher.tsx";
@@ -44,8 +43,7 @@ const App: React.FC = () => {
                                 <Route path="/add" element={<AddVoucher />} />
                                 <Route path="/deleted" element={<DeletedVoucher />} />
                                 <Route path="/sent" element={<NotificationList />} />
-                                <Route path="/report" element={<ReportGenerator />} />
-                                <Route path="/custom-report" element={<ReportListGenerator />} />
+                                <Route path="/report" element={<Reports />} />
                                 <Route path="/date-range" element={<VoucherDateRange />} />
                             </>
                         )}

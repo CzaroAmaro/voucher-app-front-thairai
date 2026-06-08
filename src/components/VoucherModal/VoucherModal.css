@@ -131,3 +131,278 @@
 .voucher-code-modal{
     color:var(--table-tr-color);
 }
+
+/* ============================================================
+   Nowy modal vouchera (prefiks vm-) — spójny z resztą aplikacji.
+   Stare reguły powyżej zostają dla kompatybilności.
+   ============================================================ */
+
+.vm-overlay {
+    --vm-accent: #2563eb;
+    --vm-accent-hover: #1d4ed8;
+    --vm-success: #16a34a;
+    --vm-warn: #d97706;
+    --vm-danger: #dc2626;
+    --vm-radius: 16px;
+    --vm-radius-sm: 10px;
+    --vm-border: color-mix(in srgb, var(--primary-text-color) 12%, transparent);
+    --vm-muted: color-mix(in srgb, var(--primary-text-color) 58%, transparent);
+    --vm-field-bg: var(--background-color);
+
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.5);
+    animation: vm-fade 0.2s ease both;
+}
+@keyframes vm-fade {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+.vm-modal {
+    width: 100%;
+    max-width: 560px;
+    max-height: 90vh;
+    overflow-y: auto;
+    color: var(--primary-text-color);
+    background: var(--background-color-2);
+    border: 1px solid var(--vm-border);
+    border-radius: var(--vm-radius);
+    box-shadow: 0 24px 60px -20px rgba(0, 0, 0, 0.55);
+    animation: vm-pop 0.22s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+@keyframes vm-pop {
+    from { opacity: 0; transform: translateY(12px) scale(0.98); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ---------- Nagłówek ---------- */
+.vm-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 20px 22px 0;
+}
+.vm-head__title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+.vm-code {
+    font-family: ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace;
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+}
+.vm-close {
+    flex: 0 0 auto;
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--vm-muted);
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+.vm-close:hover {
+    background: color-mix(in srgb, var(--primary-text-color) 8%, transparent);
+    color: var(--primary-text-color);
+}
+
+.vm-summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 18px;
+    padding: 12px 22px 0;
+    color: var(--vm-muted);
+    font-size: 0.9rem;
+}
+.vm-summary strong {
+    color: var(--primary-text-color);
+}
+
+/* ---------- Zakładki ---------- */
+.vm-tabs {
+    display: flex;
+    gap: 4px;
+    padding: 16px 22px 0;
+    flex-wrap: wrap;
+}
+.vm-tab {
+    appearance: none;
+    border: none;
+    background: transparent;
+    color: var(--vm-muted);
+    font: inherit;
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+.vm-tab:hover {
+    color: var(--primary-text-color);
+}
+.vm-tab.is-active {
+    background: var(--vm-accent);
+    color: #fff;
+}
+
+/* ---------- Treść / formularze ---------- */
+.vm-body {
+    padding: 18px 22px 24px;
+}
+.vm-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+.vm-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+.vm-field {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    min-width: 0;
+}
+.vm-field label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--vm-muted);
+}
+.vm-field input,
+.vm-field select {
+    width: 100%;
+    padding: 11px 14px;
+    font: inherit;
+    color: var(--primary-text-color);
+    background: var(--vm-field-bg);
+    border: 1px solid var(--vm-border);
+    border-radius: var(--vm-radius-sm);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.vm-field input:focus,
+.vm-field select:focus {
+    outline: none;
+    border-color: var(--vm-accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--vm-accent) 22%, transparent);
+}
+.vm-field input:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.vm-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.9rem;
+    color: var(--vm-muted);
+    cursor: pointer;
+}
+.vm-checkbox input {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--vm-accent);
+    cursor: pointer;
+}
+
+.vm-info {
+    margin: 0;
+    padding: 12px 14px;
+    border-radius: var(--vm-radius-sm);
+    background: var(--vm-field-bg);
+    color: var(--vm-muted);
+    font-size: 0.92rem;
+}
+.vm-error {
+    margin: 0;
+    padding: 11px 14px;
+    border-radius: var(--vm-radius-sm);
+    color: var(--vm-danger);
+    background: color-mix(in srgb, var(--vm-danger) 12%, transparent);
+    border: 1px solid color-mix(in srgb, var(--vm-danger) 35%, transparent);
+    font-size: 0.9rem;
+}
+
+/* ---------- Akcje / przyciski ---------- */
+.vm-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+.vm-btn {
+    padding: 11px 24px;
+    font: inherit;
+    font-weight: 600;
+    color: #fff;
+    border: none;
+    border-radius: var(--vm-radius-sm);
+    cursor: pointer;
+    transition: background-color 0.2s ease, opacity 0.2s ease;
+}
+.vm-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+.vm-btn--primary {
+    background: var(--vm-accent);
+}
+.vm-btn--primary:not(:disabled):hover {
+    background: var(--vm-accent-hover);
+}
+.vm-btn--danger {
+    background: var(--vm-danger);
+}
+.vm-btn--danger:not(:disabled):hover {
+    background: #b91c1c;
+}
+
+/* ---------- Znaczniki ---------- */
+.vm-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 12px;
+    font-size: 0.76rem;
+    font-weight: 700;
+    border-radius: 999px;
+    white-space: nowrap;
+}
+.vm-badge--success {
+    color: var(--vm-success);
+    background: color-mix(in srgb, var(--vm-success) 15%, transparent);
+}
+.vm-badge--warn {
+    color: var(--vm-warn);
+    background: color-mix(in srgb, var(--vm-warn) 16%, transparent);
+}
+.vm-badge--muted {
+    color: var(--vm-muted);
+    background: color-mix(in srgb, var(--primary-text-color) 10%, transparent);
+}
+
+@media (max-width: 540px) {
+    .vm-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .vm-overlay,
+    .vm-modal {
+        animation: none;
+    }
+}

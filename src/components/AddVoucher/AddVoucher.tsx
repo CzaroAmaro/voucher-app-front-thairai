@@ -46,7 +46,7 @@ const AddVoucher: React.FC = () => {
                     );
                     console.log(`Wiadomość wysłana: ${notifResponse.data.message}`);
                     showNotification("Wiadomość wysłana pomyślnie!");
-                } catch (notifErr: any) {
+                } catch (notifErr) {
                     console.error("Błąd przy wysyłaniu wiadomości:", notifErr);
                     setError("Voucher dodany, ale wysłanie wiadomości nie powiodło się.");
                     showNotification("Błąd wysyłania wiadomości!");

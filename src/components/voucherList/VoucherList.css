@@ -98,3 +98,265 @@
 .table-container tbody tr.realized:hover {
     background-color: #fd3737;
 }
+
+/* ============================================================
+   Nowy widok listy voucherów (prefiks vl-).
+   Zakresowany pod .vl-page, spójny z AddRealizeVoucher / Navbar.
+   Stare reguły powyżej zostają dla innych komponentów.
+   ============================================================ */
+
+.vl-page {
+    --vl-accent: #2563eb;
+    --vl-accent-hover: #1d4ed8;
+    --vl-success: #16a34a;
+    --vl-warn: #d97706;
+    --vl-danger: #dc2626;
+    --vl-radius: 16px;
+    --vl-radius-sm: 10px;
+    --vl-border: color-mix(in srgb, var(--primary-text-color) 12%, transparent);
+    --vl-muted: color-mix(in srgb, var(--primary-text-color) 58%, transparent);
+    --vl-field-bg: var(--background-color);
+    --vl-hover: color-mix(in srgb, var(--vl-accent) 9%, transparent);
+
+    max-width: 1400px;
+    margin: 0 auto;
+    color: var(--primary-text-color);
+}
+
+.vl-header {
+    margin-bottom: 20px;
+}
+.vl-header h1 {
+    font-size: clamp(1.6rem, 2.4vw, 2rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+.vl-header p {
+    margin-top: 4px;
+    color: var(--vl-muted);
+    font-size: 0.95rem;
+}
+
+.vl-card {
+    background: var(--background-color-2);
+    border: 1px solid var(--vl-border);
+    border-radius: var(--vl-radius);
+    box-shadow: 0 10px 30px -12px rgba(0, 0, 0, 0.35);
+    padding: clamp(18px, 2.4vw, 26px);
+}
+
+/* ---------- Szukajka ---------- */
+.vl-search {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+.vl-search input {
+    flex: 1;
+    min-width: 0;
+}
+
+/* ---------- Filtry ---------- */
+.vl-filters {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 14px;
+    margin-bottom: 18px;
+}
+.vl-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+}
+.vl-field label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--vl-muted);
+}
+.vl-field--inline {
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+}
+
+.vl-page input,
+.vl-page select {
+    width: 100%;
+    padding: 10px 13px;
+    font: inherit;
+    color: var(--primary-text-color);
+    background: var(--vl-field-bg);
+    border: 1px solid var(--vl-border);
+    border-radius: var(--vl-radius-sm);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.vl-field--inline select {
+    width: auto;
+}
+.vl-page input:focus,
+.vl-page select:focus {
+    outline: none;
+    border-color: var(--vl-accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--vl-accent) 22%, transparent);
+}
+
+/* ---------- Przyciski ---------- */
+.vl-btn {
+    padding: 10px 20px;
+    font: inherit;
+    font-weight: 600;
+    color: var(--primary-text-color);
+    background: var(--vl-field-bg);
+    border: 1px solid var(--vl-border);
+    border-radius: var(--vl-radius-sm);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background-color 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
+}
+.vl-btn:not(:disabled):hover {
+    border-color: var(--vl-accent);
+}
+.vl-btn--primary {
+    color: #fff;
+    background: var(--vl-accent);
+    border-color: var(--vl-accent);
+}
+.vl-btn--primary:not(:disabled):hover {
+    background: var(--vl-accent-hover);
+    border-color: var(--vl-accent-hover);
+}
+.vl-btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+/* ---------- Komunikaty ---------- */
+.vl-message {
+    margin: 0 0 16px;
+    padding: 11px 14px;
+    border-radius: var(--vl-radius-sm);
+    font-size: 0.9rem;
+}
+.vl-message--error {
+    color: var(--vl-danger);
+    background: color-mix(in srgb, var(--vl-danger) 12%, transparent);
+    border: 1px solid color-mix(in srgb, var(--vl-danger) 35%, transparent);
+}
+
+/* ---------- Tabela ---------- */
+.vl-table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--vl-border);
+    border-radius: var(--vl-radius-sm);
+    max-height: 70vh;
+}
+.vl-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+}
+.vl-table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    text-align: left;
+    color: var(--vl-muted);
+    background: var(--background-color-2);
+    border-bottom: 1px solid var(--vl-border);
+}
+.vl-table td {
+    padding: 13px 18px;
+    border-bottom: 1px solid var(--vl-border);
+    white-space: nowrap;
+}
+.vl-table tbody tr:last-child td {
+    border-bottom: none;
+}
+.vl-row {
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+.vl-row:hover,
+.vl-row:focus-visible {
+    background: var(--vl-hover);
+    outline: none;
+}
+.vl-row.is-realized {
+    color: var(--vl-muted);
+}
+
+.vl-code {
+    font-family: ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace;
+    font-weight: 600;
+}
+.vl-note {
+    max-width: 240px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.vl-expired {
+    color: var(--vl-warn);
+}
+.vl-state {
+    padding: 40px 18px !important;
+    text-align: center;
+    color: var(--vl-muted);
+    white-space: normal !important;
+}
+
+/* ---------- Znaczniki ---------- */
+.vl-badge {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 8px;
+    padding: 3px 10px;
+    font-size: 0.74rem;
+    font-weight: 700;
+    border-radius: 999px;
+    white-space: nowrap;
+}
+.vl-badge:first-child {
+    margin-left: 0;
+}
+.vl-badge--success {
+    color: var(--vl-success);
+    background: color-mix(in srgb, var(--vl-success) 15%, transparent);
+}
+.vl-badge--warn {
+    color: var(--vl-warn);
+    background: color-mix(in srgb, var(--vl-warn) 16%, transparent);
+}
+.vl-badge--muted {
+    color: var(--vl-muted);
+    background: color-mix(in srgb, var(--primary-text-color) 10%, transparent);
+}
+
+/* ---------- Paginacja ---------- */
+.vl-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-top: 18px;
+}
+.vl-pager {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+.vl-pager__info {
+    color: var(--vl-muted);
+    font-size: 0.9rem;
+    white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+    .vl-search {
+        flex-wrap: wrap;
+    }
+    .vl-pagination {
+        justify-content: center;
+    }
+}

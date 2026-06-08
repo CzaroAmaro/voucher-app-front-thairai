@@ -1,0 +1,260 @@
+/* ============================================================
+   Raporty — połączony widok (miesięczny + z wybranych).
+   Styl spójny z resztą aplikacji, motyw jasny/ciemny.
+   ============================================================ */
+
+.rp-page {
+    --rp-accent: #2563eb;
+    --rp-accent-hover: #1d4ed8;
+    --rp-success: #16a34a;
+    --rp-danger: #dc2626;
+    --rp-radius: 16px;
+    --rp-radius-sm: 10px;
+    --rp-border: color-mix(in srgb, var(--primary-text-color) 12%, transparent);
+    --rp-muted: color-mix(in srgb, var(--primary-text-color) 58%, transparent);
+    --rp-field-bg: var(--background-color);
+
+    max-width: 860px;
+    margin: 0 auto;
+    color: var(--primary-text-color);
+}
+
+.rp-header {
+    margin-bottom: 20px;
+}
+.rp-header h1 {
+    font-size: clamp(1.6rem, 2.4vw, 2rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+.rp-header p {
+    margin-top: 4px;
+    color: var(--rp-muted);
+    font-size: 0.95rem;
+}
+
+.rp-card {
+    background: var(--background-color-2);
+    border: 1px solid var(--rp-border);
+    border-radius: var(--rp-radius);
+    box-shadow: 0 10px 30px -12px rgba(0, 0, 0, 0.35);
+    padding: clamp(20px, 3vw, 28px);
+}
+
+/* ---------- Zakładki ---------- */
+.rp-tabs {
+    display: inline-flex;
+    gap: 4px;
+    padding: 5px;
+    margin-bottom: 22px;
+    background: var(--rp-field-bg);
+    border: 1px solid var(--rp-border);
+    border-radius: 999px;
+}
+.rp-tab {
+    border: none;
+    background: transparent;
+    color: var(--rp-muted);
+    font: inherit;
+    font-weight: 600;
+    padding: 9px 22px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+.rp-tab:hover {
+    color: var(--primary-text-color);
+}
+.rp-tab.is-active {
+    background: var(--rp-accent);
+    color: #fff;
+}
+
+/* ---------- Wybór okresu ---------- */
+.rp-period {
+    display: flex;
+    align-items: flex-end;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+.rp-field {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    min-width: 150px;
+}
+.rp-field label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--rp-muted);
+}
+.rp-page select {
+    width: 100%;
+    padding: 11px 14px;
+    font: inherit;
+    color: var(--primary-text-color);
+    background: var(--rp-field-bg);
+    border: 1px solid var(--rp-border);
+    border-radius: var(--rp-radius-sm);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.rp-page select:focus {
+    outline: none;
+    border-color: var(--rp-accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--rp-accent) 22%, transparent);
+}
+
+/* ---------- Przyciski ---------- */
+.rp-btn {
+    padding: 11px 22px;
+    font: inherit;
+    font-weight: 600;
+    border: 1px solid transparent;
+    border-radius: var(--rp-radius-sm);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background-color 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
+}
+.rp-btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+.rp-btn--primary {
+    color: #fff;
+    background: var(--rp-accent);
+}
+.rp-btn--primary:not(:disabled):hover {
+    background: var(--rp-accent-hover);
+}
+.rp-btn--ghost {
+    color: var(--rp-accent);
+    background: transparent;
+    border-color: var(--rp-border);
+    padding: 7px 14px;
+    font-size: 0.88rem;
+}
+.rp-btn--ghost:hover {
+    border-color: var(--rp-accent);
+}
+
+/* ---------- Komunikaty ---------- */
+.rp-message {
+    margin: 18px 0 0;
+    padding: 11px 14px;
+    border-radius: var(--rp-radius-sm);
+    font-size: 0.9rem;
+}
+.rp-message--error {
+    color: var(--rp-danger);
+    background: color-mix(in srgb, var(--rp-danger) 12%, transparent);
+    border: 1px solid color-mix(in srgb, var(--rp-danger) 35%, transparent);
+}
+.rp-message--success {
+    color: var(--rp-success);
+    background: color-mix(in srgb, var(--rp-success) 13%, transparent);
+    border: 1px solid color-mix(in srgb, var(--rp-success) 32%, transparent);
+}
+.rp-empty {
+    margin-top: 20px;
+    text-align: center;
+    color: var(--rp-muted);
+}
+
+/* ---------- Załadowany okres ---------- */
+.rp-loaded {
+    margin-top: 20px;
+    padding: 10px 14px;
+    border-radius: var(--rp-radius-sm);
+    background: var(--rp-field-bg);
+    border: 1px solid var(--rp-border);
+    color: var(--rp-muted);
+    font-size: 0.9rem;
+}
+.rp-loaded strong {
+    color: var(--primary-text-color);
+}
+
+/* ---------- Grupy voucherów ---------- */
+.rp-group {
+    margin-top: 22px;
+}
+.rp-group__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+.rp-group__head h3 {
+    font-size: 1rem;
+    font-weight: 700;
+}
+.rp-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-height: 320px;
+    overflow-y: auto;
+}
+.rp-item {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    border: 1px solid var(--rp-border);
+    border-radius: var(--rp-radius-sm);
+    background: var(--rp-field-bg);
+    cursor: pointer;
+    transition: border-color 0.18s ease;
+}
+.rp-item:hover {
+    border-color: var(--rp-accent);
+}
+.rp-item input {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--rp-accent);
+    cursor: pointer;
+}
+.rp-item__code {
+    font-family: ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace;
+    font-weight: 600;
+}
+.rp-item__meta {
+    grid-column: 2;
+    grid-row: 2;
+    font-size: 0.82rem;
+    color: var(--rp-muted);
+}
+.rp-item__amount {
+    font-weight: 600;
+}
+
+/* ---------- Akcje ---------- */
+.rp-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 22px;
+}
+
+@media (max-width: 600px) {
+    .rp-period {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .rp-field {
+        min-width: 0;
+    }
+    .rp-item {
+        grid-template-columns: auto 1fr;
+    }
+    .rp-item__amount {
+        grid-column: 2;
+        grid-row: 1;
+        justify-self: end;
+    }
+}

@@ -9,24 +9,24 @@ interface VoucherSortProps {
     onSort: (column: string) => void;
 }
 
-const VoucherSort: React.FC<VoucherSortProps> =
-    ({
-         column,
-         label,
-         sortColumn,
-         sortDirection,
-         onSort,
-     }) => {
+const VoucherSort: React.FC<VoucherSortProps> = ({
+    column,
+    label,
+    sortColumn,
+    sortDirection,
+    onSort,
+}) => {
     const isActive = sortColumn === column;
-    const arrow = isActive
-        ? sortDirection === "asc"
-            ? "▲"
-            : "▼"
-        : "▲";
+    const ariaSort = isActive ? (sortDirection === "asc" ? "ascending" : "descending") : "none";
 
     return (
-        <th onClick={() => onSort(column)} className="sortable-header">
-            {label} {arrow}
+        <th className={`vl-th ${isActive ? "is-sorted" : ""}`} aria-sort={ariaSort}>
+            <button type="button" className="vl-th__btn" onClick={() => onSort(column)}>
+                <span>{label}</span>
+                <span className="vl-th__arrow" aria-hidden>
+                    {isActive ? (sortDirection === "asc" ? "▲" : "▼") : "↕"}
+                </span>
+            </button>
         </th>
     );
 };

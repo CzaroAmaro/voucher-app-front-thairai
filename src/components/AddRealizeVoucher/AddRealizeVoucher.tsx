@@ -7,363 +7,497 @@ import {
 } from "../../services/voucherService";
 import { sendEmail } from "../../services/notificationService";
 import { Voucher } from "../../models/Voucher";
+import { formatCurrency, formatDate, isExpired, isVoucherRealized } from "../../utils/voucher";
 import Alert from "../Alert/Alert";
 import "./AddRealizeVoucher.css";
 
-interface AddRealizeVoucherProps {
-    onUpdate?: (updatedVoucher: Voucher) => void;
-}
+type Tab = "add" | "realize";
 
-const AddRealizeVoucher: React.FC<AddRealizeVoucherProps> = ({ onUpdate }) => {
-    const [paymentMethod, setPaymentMethod] = useState<string>("");
-    const [amount, setAmount] = useState<number>(0);
-    const [note, setNote] = useState<string>("Usługa masażu");
-    const [howManyDaysAvailable, setHowManyDaysAvailable] = useState<number>(180);
-    const [email, setEmail] = useState<string>("");
+const PLACES = ["Ostrołęka", "Ostrołęka-2", "Mława"] as const;
+const PAYMENT_METHODS = ["Blik", "Gotówka"] as const;
+const DEFAULT_NOTE = "Usługa masażu";
+const DEFAULT_DAYS = 180;
+
+const AddRealizeVoucher: React.FC = () => {
+    const [activeTab, setActiveTab] = useState<Tab>("add");
+    const [alertMessage, setAlertMessage] = useState<string | null>(null);
+
+    // --- Zakładka "Dodaj" ---
+    const [paymentMethod, setPaymentMethod] = useState("");
+    const [amount, setAmount] = useState("");
+    const [note, setNote] = useState(DEFAULT_NOTE);
+    const [daysValid, setDaysValid] = useState(String(DEFAULT_DAYS));
+    const [place, setPlace] = useState("");
+    const [email, setEmail] = useState("");
     const [userName, setUserName] = useState("");
-    const [place, setPlace] = useState<string>("");
-    const [searchTerm, setSearchTerm] = useState<string>("");
-    const [vouchers, setVouchers] = useState<Voucher[]>([]);
-    const [voucherNote, setVoucherNote] = useState<string>("");
-    const [loading, setLoading] = useState<boolean>(false);
-    const [error, setError] = useState<string>("");
-    const [redemptionAmounts, setRedemptionAmounts] = useState<{ [key: number]: number }>({});
-    const [showAlert, setShowAlert] = useState(false);
-    const [alertMessage, setAlertMessage] = useState("");
+    const [voucherNote, setVoucherNote] = useState("");
+    const [isAdding, setIsAdding] = useState(false);
+    const [addError, setAddError] = useState("");
+    const [lastAdded, setLastAdded] = useState<Voucher | null>(null);
 
-    const showNotification = (message: string) => {
-        setAlertMessage(message);
-        setShowAlert(true);
+    // --- Zakładka "Realizuj" ---
+    const [searchTerm, setSearchTerm] = useState("");
+    const [results, setResults] = useState<Voucher[]>([]);
+    const [isSearching, setIsSearching] = useState(false);
+    const [searchError, setSearchError] = useState("");
+    const [hasSearched, setHasSearched] = useState(false);
+    const [redemptionInputs, setRedemptionInputs] = useState<Record<number, string>>({});
+    const [redeemingId, setRedeemingId] = useState<number | null>(null);
+
+    const resetAddForm = () => {
+        setPaymentMethod("");
+        setAmount("");
+        setNote(DEFAULT_NOTE);
+        setDaysValid(String(DEFAULT_DAYS));
+        setPlace("");
+        setEmail("");
+        setUserName("");
+        setVoucherNote("");
     };
 
-    const handleAddVoucher = async (e: React.FormEvent<HTMLFormElement>) => {
+    const handleAdd = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        setError("");
+        setAddError("");
+
+        const amountValue = Number(amount);
+        if (!Number.isFinite(amountValue) || amountValue <= 0) {
+            setAddError("Podaj poprawną kwotę większą od zera.");
+            return;
+        }
+        const daysValue = Number(daysValid);
+        const normalizedDays =
+            Number.isFinite(daysValue) && daysValue > 0 ? daysValue : DEFAULT_DAYS;
+
+        setIsAdding(true);
         try {
-            const response = await addVoucher({
+            const { data: newVoucher } = await addVoucher({
                 paymentMethod,
-                amount,
+                amount: amountValue,
                 note,
-                howManyDaysAvailable,
+                howManyDaysAvailable: normalizedDays,
                 place,
             });
-            const newVoucher: Voucher = response.data;
-            showNotification(`Voucher dodany pomyślnie! Kod vouchera: ${newVoucher.voucherCode}.`);
-            setVouchers((prev) => [newVoucher, ...prev]);
+            setLastAdded(newVoucher);
 
-            if (email.trim()) {
+            let message = `Voucher dodany pomyślnie. Kod: ${newVoucher.voucherCode}.`;
+            const recipient = email.trim();
+            if (recipient) {
                 try {
-                    const notifResponse = await sendEmail(
-                        newVoucher.voucherCode,
-                        email,
-                        userName,
-                        voucherNote
-                    );
-                    console.log(`Wiadomość wysłana: ${notifResponse.data.message}`);
-                    showNotification("Wiadomość wysłana pomyślnie!");
-                } catch (notifErr: any) {
+                    await sendEmail(newVoucher.voucherCode, recipient, userName, voucherNote);
+                    message += " E-mail został wysłany.";
+                } catch (notifErr) {
                     console.error("Błąd przy wysyłaniu wiadomości:", notifErr);
-                    setError("Voucher dodany, ale wysłanie wiadomości nie powiodło się.");
-                    showNotification("Błąd wysyłania wiadomości!");
+                    message += " Nie udało się wysłać e-maila.";
                 }
             }
-            setPaymentMethod("");
-            setAmount(0);
-            setNote("Usługa masażu");
-            setHowManyDaysAvailable(180);
-            setEmail("");
-            setUserName("");
-            setVoucherNote("");
+            setAlertMessage(message);
+            resetAddForm();
         } catch (err) {
             console.error("Błąd przy dodawaniu vouchera:", err);
-            setError("Wystąpił błąd podczas dodawania vouchera.");
-            showNotification("Błąd podczas dodawania vouchera!");
+            setAddError("Nie udało się dodać vouchera. Spróbuj ponownie.");
+        } finally {
+            setIsAdding(false);
         }
     };
 
     const handleSearch = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        setLoading(true);
-        setError("");
+        const term = searchTerm.trim();
+        if (!term) return;
+
+        setIsSearching(true);
+        setSearchError("");
+        setHasSearched(true);
         try {
-            let response;
-            if (/^\d+$/.test(searchTerm)) {
-                response = await getVoucherById(Number(searchTerm));
-                setVouchers([response.data]);
-            } else {
-                response = await getVoucherByCode(searchTerm);
-                const data = response.data;
-                if (Array.isArray(data)) {
-                    setVouchers(data);
-                } else if (data) {
-                    setVouchers([data]);
-                } else {
-                    setVouchers([]);
-                }
-            }
-            if (Array.isArray(response.data) && response.data.length === 0) {
-                setError("Nie znaleziono voucherów dla podanego kryterium.");
+            const byId = /^\d+$/.test(term);
+            const { data } = byId
+                ? await getVoucherById(Number(term))
+                : await getVoucherByCode(term);
+
+            const list: Voucher[] = Array.isArray(data) ? data : data ? [data] : [];
+            setResults(list);
+            setRedemptionInputs({});
+            if (list.length === 0) {
+                setSearchError("Nie znaleziono vouchera dla podanego kryterium.");
             }
         } catch (err) {
             console.error("Błąd podczas wyszukiwania:", err);
-            setError("Wystąpił błąd podczas wyszukiwania.");
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleRedemptionAmountChange = (id: number, value: number) => {
-        setRedemptionAmounts((prev) => ({ ...prev, [id]: value }));
-    };
-
-    const handleRealize = async (voucherItem: Voucher) => {
-        setError("");
-        const redemptionAmount = redemptionAmounts[voucherItem.id] || 0;
-        if (redemptionAmount <= 0) {
-            setError("Kwota do realizacji musi być większa niż 0.");
-            return;
-        }
-        if (redemptionAmount > voucherItem.amount) {
-            setError("Kwota do realizacji nie może przekraczać dostępnej kwoty vouchera.");
-            return;
-        }
-        const currentDate = new Date();
-        const validUntilDate = new Date(voucherItem.validUntil);
-        if (validUntilDate < currentDate) {
-            const proceed = window.confirm(
-                "Voucher jest przedawniony. Czy na pewno chcesz go zrealizować?"
+            const status =
+                typeof err === "object" && err !== null && "response" in err
+                    ? (err as { response?: { status?: number } }).response?.status
+                    : undefined;
+            setResults([]);
+            setSearchError(
+                status === 404
+                    ? "Nie znaleziono vouchera dla podanego kryterium."
+                    : "Wystąpił błąd podczas wyszukiwania."
             );
-            if (!proceed) return;
+        } finally {
+            setIsSearching(false);
         }
+    };
+
+    const handleRedemptionChange = (id: number, value: string) => {
+        setRedemptionInputs((prev) => ({ ...prev, [id]: value }));
+    };
+
+    const handleRedeem = async (voucher: Voucher) => {
+        setSearchError("");
+        const value = Number(redemptionInputs[voucher.id]);
+
+        if (!Number.isFinite(value) || value <= 0) {
+            setSearchError("Kwota realizacji musi być większa od zera.");
+            return;
+        }
+        if (value > voucher.availableAmount) {
+            setSearchError(
+                `Kwota realizacji nie może przekraczać pozostałych ${formatCurrency(
+                    voucher.availableAmount
+                )}.`
+            );
+            return;
+        }
+        if (
+            isExpired(voucher.validUntil) &&
+            !window.confirm("Voucher jest przedawniony. Czy na pewno chcesz go zrealizować?")
+        ) {
+            return;
+        }
+
+        setRedeemingId(voucher.id);
         try {
-            const response = await realizeVoucher(voucherItem.voucherCode, redemptionAmount);
-            if (onUpdate) {
-                onUpdate(response.data);
-            }
-            console.log("Voucher zrealizowany pomyślnie!");
-            setVouchers((prev) => prev.filter((v) => v.id !== voucherItem.id));
+            const { data: updated } = await realizeVoucher(voucher.voucherCode, value);
+            setResults((prev) => prev.map((v) => (v.id === updated.id ? updated : v)));
+            setRedemptionInputs((prev) => ({ ...prev, [voucher.id]: "" }));
+            setAlertMessage(
+                updated.availableAmount > 0
+                    ? `Zrealizowano ${formatCurrency(value)}. Pozostało ${formatCurrency(
+                          updated.availableAmount
+                      )}.`
+                    : "Voucher został w całości zrealizowany."
+            );
         } catch (err) {
             console.error("Błąd przy realizacji vouchera:", err);
-            setError("Wystąpił błąd podczas realizacji vouchera.");
+            setSearchError("Wystąpił błąd podczas realizacji vouchera.");
+        } finally {
+            setRedeemingId(null);
         }
     };
 
     return (
-        <div className="voucher-container">
-            <div className="add-voucher-container">
-                <h2>Dodaj Voucher</h2>
-                <form onSubmit={handleAddVoucher} className="add-voucher-form">
-                    <div className="form-group">
-                        <label>Metoda płatności:</label>
-                        <select
-                            value={paymentMethod}
-                            onChange={(e) => setPaymentMethod(e.target.value)}
-                            required
-                        >
-                            <option value="">Wybierz metodę</option>
-                            <option value="Blik">Blik</option>
-                            <option value="Gotówka">Gotówka</option>
-                        </select>
-                    </div>
+        <div className="ar-page">
+            <header className="ar-header">
+                <h1>Vouchery</h1>
+                <p>Dodaj nowy voucher lub zrealizuj istniejący.</p>
+            </header>
 
-                    <div className="form-group">
-                        <label>Kwota</label>
-                        <input
-                            type="number"
-                            value={amount === 0 ? "" : amount}
-                            onChange={(e) =>
-                                setAmount(e.target.value === "" ? 0 : Number(e.target.value))
-                            }
-                            required
-                            placeholder="Podaj kwotę"
-                        />
-                    </div>
-
-                    <div className="form-group">
-                        <label>Notatka</label>
-                        <input
-                            type="text"
-                            value={note}
-                            onChange={(e) => setNote(e.target.value)}
-                            required
-                            placeholder="Dodaj krótką notatkę"
-                        />
-                    </div>
-
-                    <div className="form-group">
-                        <label>Ile dni voucher ma być dostępny</label>
-                        <input
-                            type="number"
-                            value={howManyDaysAvailable === 0 ? "" : howManyDaysAvailable}
-                            onChange={(e) =>
-                                setHowManyDaysAvailable(
-                                    e.target.value === "" ? 0 : Number(e.target.value)
-                                )
-                            }
-                            required
-                            placeholder="Podaj liczbę dni"
-                        />
-                    </div>
-
-                    <div className="form-group">
-                        <label>Miejsce:</label>
-                        <select
-                            value={place}
-                            onChange={(e) => setPlace(e.target.value)}
-                            required
-                        >
-                            <option value="">Wybierz miejsce</option>
-                            <option value="Ostrołęka">Ostrołęka</option>
-                            <option value="Ostrołęka-2">Ostrołęka-2</option>
-                            <option value="Mława">Mława</option>
-                        </select>
-                    </div>
-
-                    <div className="form-group">
-                        <label>Email klienta</label>
-                        <input
-                            type="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            placeholder="Podaj adres email"
-                        />
-                    </div>
-                    <div className="form-group">
-                        <label>Dla kogo</label>
-                        <input
-                            type="text"
-                            value={userName}
-                            onChange={(e) => setUserName(e.target.value)}
-                            placeholder="Podaj dla kogo ma być wystawiony voucher"
-                        />
-                    </div>
-                    <div className="form-group">
-                        <label>Informacja na voucherze</label>
-                        <input
-                            type="text"
-                            value={voucherNote}
-                            onChange={(e) => setVoucherNote(e.target.value)}
-                            placeholder="Podaj informacje o usłudze na voucherze."
-                        />
-                    </div>
-
-                    <button type="submit">Dodaj Voucher</button>
-                </form>
-
-                {error && <p className="error">{error}</p>}
-
-                {vouchers.length > 0 && (
-                    <div className="voucher-list">
-                        <h3>Dodane vouchery</h3>
-                        <table className="voucher-table">
-                            <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Kod</th>
-                                <th>Data sprzedaży</th>
-                                <th>Metoda płatności</th>
-                                <th>Kwota</th>
-                                <th>Pozostała kwota</th>
-                                <th>Notatka</th>
-                                <th>Ważny do</th>
-                                <th>Miejsce</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {vouchers.map((voucherItem) => (
-                                <tr key={voucherItem.id}>
-                                    <td>{voucherItem.id}</td>
-                                    <td>{voucherItem.voucherCode}</td>
-                                    <td>{new Date(voucherItem.saleDate).toLocaleDateString()}</td>
-                                    <td>{voucherItem.paymentMethod}</td>
-                                    <td>{voucherItem.amount}</td>
-                                    <td>{voucherItem.availableAmount}</td>
-                                    <td>{voucherItem.note}</td>
-                                    <td>{new Date(voucherItem.validUntil).toLocaleDateString()}</td>
-                                    <td>{voucherItem.place}</td>
-                                </tr>
-                            ))}
-                            </tbody>
-                        </table>
-                    </div>
-                )}
+            <div className="ar-tabs" role="tablist" aria-label="Operacje na voucherach">
+                <button
+                    type="button"
+                    role="tab"
+                    aria-selected={activeTab === "add"}
+                    className={`ar-tab ${activeTab === "add" ? "is-active" : ""}`}
+                    onClick={() => setActiveTab("add")}
+                >
+                    Dodaj
+                </button>
+                <button
+                    type="button"
+                    role="tab"
+                    aria-selected={activeTab === "realize"}
+                    className={`ar-tab ${activeTab === "realize" ? "is-active" : ""}`}
+                    onClick={() => setActiveTab("realize")}
+                >
+                    Realizuj
+                </button>
             </div>
 
-            <div className="search-voucher-section">
-                <h2>Wyszukaj i Zrealizuj Voucher</h2>
-                <form onSubmit={handleSearch} className="voucher-form">
-                    <input
-                        type="text"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        placeholder="Wprowadź ID lub kod vouchera"
-                    />
-                    <button type="submit">Szukaj</button>
-                </form>
-                {loading && <p>Ładowanie...</p>}
-                {error && <p className="error">{error}</p>}
-                {vouchers.length > 0 && (
-                    <table className="voucher-table">
-                        <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Kod</th>
-                            <th>Data sprzedaży</th>
-                            <th>Metoda płatności</th>
-                            <th>Kwota</th>
-                            <th>Pozostała kwota</th>
-                            <th>Notatka</th>
-                            <th>Ważny do</th>
-                            <th>Miejsce</th>
-                            <th>Kwota do realizacji</th>
-                            <th>Akcja</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {vouchers.map((voucherItem) => (
-                            <tr key={voucherItem.id}>
-                                <td>{voucherItem.id}</td>
-                                <td>{voucherItem.voucherCode}</td>
-                                <td>{new Date(voucherItem.saleDate).toLocaleDateString()}</td>
-                                <td>{voucherItem.paymentMethod}</td>
-                                <td>{voucherItem.amount}</td>
-                                <td>{voucherItem.availableAmount}</td>
-                                <td>{voucherItem.note}</td>
-                                <td>{new Date(voucherItem.validUntil).toLocaleDateString()}</td>
-                                <td>{voucherItem.place}</td>
-                                <td>
-                                    <input
-                                        type="number"
-                                        placeholder="Kwota"
-                                        value={
-                                            redemptionAmounts[voucherItem.id] === 0
-                                                ? ""
-                                                : redemptionAmounts[voucherItem.id] || ""
-                                        }
-                                        onChange={(e) =>
-                                            handleRedemptionAmountChange(
-                                                voucherItem.id,
-                                                e.target.value === "" ? 0 : Number(e.target.value)
-                                            )
-                                        }
-                                    />
-                                </td>
-                                <td>
-                                    <button onClick={() => handleRealize(voucherItem)}>
-                                        Zrealizuj
-                                    </button>
-                                </td>
-                            </tr>
-                        ))}
-                        </tbody>
-                    </table>
-                )}
-            </div>
-            {showAlert && (
-                <Alert
-                    message={alertMessage}
-                    onClose={() => setShowAlert(false)}
-                />
+            {activeTab === "add" && (
+                <section className="ar-card" aria-label="Dodawanie vouchera">
+                    <form className="ar-form" onSubmit={handleAdd} noValidate>
+                        <div className="ar-field">
+                            <label htmlFor="ar-payment">Metoda płatności</label>
+                            <select
+                                id="ar-payment"
+                                value={paymentMethod}
+                                onChange={(e) => setPaymentMethod(e.target.value)}
+                                required
+                            >
+                                <option value="">Wybierz metodę</option>
+                                {PAYMENT_METHODS.map((m) => (
+                                    <option key={m} value={m}>
+                                        {m}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <div className="ar-field">
+                            <label htmlFor="ar-amount">Kwota (zł)</label>
+                            <input
+                                id="ar-amount"
+                                type="number"
+                                inputMode="decimal"
+                                min="0"
+                                step="0.01"
+                                value={amount}
+                                onChange={(e) => setAmount(e.target.value)}
+                                placeholder="np. 200"
+                                required
+                            />
+                        </div>
+
+                        <div className="ar-field">
+                            <label htmlFor="ar-place">Miejsce</label>
+                            <select
+                                id="ar-place"
+                                value={place}
+                                onChange={(e) => setPlace(e.target.value)}
+                                required
+                            >
+                                <option value="">Wybierz miejsce</option>
+                                {PLACES.map((p) => (
+                                    <option key={p} value={p}>
+                                        {p}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <div className="ar-field">
+                            <label htmlFor="ar-days">Ważność (dni)</label>
+                            <input
+                                id="ar-days"
+                                type="number"
+                                inputMode="numeric"
+                                min="1"
+                                step="1"
+                                value={daysValid}
+                                onChange={(e) => setDaysValid(e.target.value)}
+                                placeholder={String(DEFAULT_DAYS)}
+                            />
+                        </div>
+
+                        <div className="ar-field ar-field--full">
+                            <label htmlFor="ar-note">Notatka</label>
+                            <input
+                                id="ar-note"
+                                type="text"
+                                value={note}
+                                onChange={(e) => setNote(e.target.value)}
+                                placeholder="Krótka notatka wewnętrzna"
+                                required
+                            />
+                        </div>
+
+                        <div className="ar-divider ar-field--full">
+                            <span>Wysyłka e-mail (opcjonalnie)</span>
+                        </div>
+
+                        <div className="ar-field">
+                            <label htmlFor="ar-email">E-mail klienta</label>
+                            <input
+                                id="ar-email"
+                                type="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                placeholder="adres@email.pl"
+                            />
+                        </div>
+
+                        <div className="ar-field">
+                            <label htmlFor="ar-username">Dla kogo</label>
+                            <input
+                                id="ar-username"
+                                type="text"
+                                value={userName}
+                                onChange={(e) => setUserName(e.target.value)}
+                                placeholder="Imię obdarowanej osoby"
+                            />
+                        </div>
+
+                        <div className="ar-field ar-field--full">
+                            <label htmlFor="ar-vouchernote">Informacja na voucherze</label>
+                            <input
+                                id="ar-vouchernote"
+                                type="text"
+                                value={voucherNote}
+                                onChange={(e) => setVoucherNote(e.target.value)}
+                                placeholder="Treść widoczna na voucherze (np. rodzaj usługi)"
+                            />
+                        </div>
+
+                        {addError && (
+                            <p className="ar-message ar-message--error ar-field--full" role="alert">
+                                {addError}
+                            </p>
+                        )}
+
+                        <div className="ar-actions ar-field--full">
+                            <button
+                                type="submit"
+                                className="ar-btn ar-btn--primary"
+                                disabled={isAdding}
+                            >
+                                {isAdding ? <span className="ar-spinner" aria-hidden /> : null}
+                                {isAdding ? "Dodawanie…" : "Dodaj voucher"}
+                            </button>
+                        </div>
+                    </form>
+
+                    {lastAdded && (
+                        <div className="ar-receipt" role="status">
+                            <div className="ar-receipt__head">
+                                <span className="ar-badge ar-badge--success">Dodano</span>
+                                <code className="ar-code">{lastAdded.voucherCode}</code>
+                            </div>
+                            <dl className="ar-receipt__grid">
+                                <div>
+                                    <dt>Kwota</dt>
+                                    <dd>{formatCurrency(lastAdded.amount)}</dd>
+                                </div>
+                                <div>
+                                    <dt>Miejsce</dt>
+                                    <dd>{lastAdded.place || "—"}</dd>
+                                </div>
+                                <div>
+                                    <dt>Ważny do</dt>
+                                    <dd>{formatDate(lastAdded.validUntil)}</dd>
+                                </div>
+                            </dl>
+                        </div>
+                    )}
+                </section>
+            )}
+
+            {activeTab === "realize" && (
+                <section className="ar-card" aria-label="Realizacja vouchera">
+                    <form className="ar-search" onSubmit={handleSearch}>
+                        <input
+                            type="text"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            placeholder="Wpisz ID lub kod vouchera"
+                            aria-label="ID lub kod vouchera"
+                        />
+                        <button
+                            type="submit"
+                            className="ar-btn ar-btn--primary"
+                            disabled={isSearching || !searchTerm.trim()}
+                        >
+                            {isSearching ? <span className="ar-spinner" aria-hidden /> : null}
+                            {isSearching ? "Szukam…" : "Szukaj"}
+                        </button>
+                    </form>
+
+                    {searchError && (
+                        <p className="ar-message ar-message--error" role="alert">
+                            {searchError}
+                        </p>
+                    )}
+
+                    {!searchError && hasSearched && !isSearching && results.length === 0 && (
+                        <p className="ar-empty">Brak wyników.</p>
+                    )}
+
+                    <div className="ar-results">
+                        {results.map((voucher) => {
+                            const realized = isVoucherRealized(voucher);
+                            const expired = isExpired(voucher.validUntil);
+                            const busy = redeemingId === voucher.id;
+
+                            return (
+                                <article key={voucher.id} className="ar-voucher">
+                                    <div className="ar-voucher__head">
+                                        <code className="ar-code">{voucher.voucherCode}</code>
+                                        {realized ? (
+                                            <span className="ar-badge ar-badge--muted">Zrealizowany</span>
+                                        ) : expired ? (
+                                            <span className="ar-badge ar-badge--warn">Przedawniony</span>
+                                        ) : (
+                                            <span className="ar-badge ar-badge--success">Aktywny</span>
+                                        )}
+                                    </div>
+
+                                    <dl className="ar-voucher__grid">
+                                        <div>
+                                            <dt>Pozostała kwota</dt>
+                                            <dd className="ar-strong">
+                                                {formatCurrency(voucher.availableAmount)}
+                                            </dd>
+                                        </div>
+                                        <div>
+                                            <dt>Kwota początkowa</dt>
+                                            <dd>{formatCurrency(voucher.amount)}</dd>
+                                        </div>
+                                        <div>
+                                            <dt>Miejsce</dt>
+                                            <dd>{voucher.place || "—"}</dd>
+                                        </div>
+                                        <div>
+                                            <dt>Metoda płatności</dt>
+                                            <dd>{voucher.paymentMethod}</dd>
+                                        </div>
+                                        <div>
+                                            <dt>Data sprzedaży</dt>
+                                            <dd>{formatDate(voucher.saleDate)}</dd>
+                                        </div>
+                                        <div>
+                                            <dt>Ważny do</dt>
+                                            <dd>{formatDate(voucher.validUntil)}</dd>
+                                        </div>
+                                        {voucher.note && (
+                                            <div className="ar-voucher__note">
+                                                <dt>Notatka</dt>
+                                                <dd>{voucher.note}</dd>
+                                            </div>
+                                        )}
+                                    </dl>
+
+                                    {realized ? (
+                                        <p className="ar-voucher__done">
+                                            Voucher został w całości zrealizowany.
+                                        </p>
+                                    ) : (
+                                        <div className="ar-voucher__redeem">
+                                            <div className="ar-field">
+                                                <label htmlFor={`ar-redeem-${voucher.id}`}>
+                                                    Kwota do realizacji (zł)
+                                                </label>
+                                                <input
+                                                    id={`ar-redeem-${voucher.id}`}
+                                                    type="number"
+                                                    inputMode="decimal"
+                                                    min="0"
+                                                    step="0.01"
+                                                    max={voucher.availableAmount}
+                                                    value={redemptionInputs[voucher.id] ?? ""}
+                                                    onChange={(e) =>
+                                                        handleRedemptionChange(voucher.id, e.target.value)
+                                                    }
+                                                    placeholder="np. 50"
+                                                />
+                                            </div>
+                                            <button
+                                                type="button"
+                                                className="ar-btn ar-btn--primary"
+                                                onClick={() => handleRedeem(voucher)}
+                                                disabled={busy}
+                                            >
+                                                {busy ? <span className="ar-spinner" aria-hidden /> : null}
+                                                {busy ? "Realizuję…" : "Zrealizuj"}
+                                            </button>
+                                        </div>
+                                    )}
+                                </article>
+                            );
+                        })}
+                    </div>
+                </section>
+            )}
+
+            {alertMessage && (
+                <Alert message={alertMessage} onClose={() => setAlertMessage(null)} />
             )}
         </div>
     );
