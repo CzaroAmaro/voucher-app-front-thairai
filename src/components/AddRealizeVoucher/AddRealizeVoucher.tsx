@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import {
     addVoucher,
     getVoucherById,
-    getVoucherByCode,
+    getVoucherByPartOfCode,
     realizeVoucher,
 } from "../../services/voucherService";
 import { sendEmail } from "../../services/notificationService";
@@ -38,6 +38,7 @@ const AddRealizeVoucher: React.FC = () => {
     // --- Zakładka "Realizuj" ---
     const [searchTerm, setSearchTerm] = useState("");
     const [results, setResults] = useState<Voucher[]>([]);
+    const [selectedId, setSelectedId] = useState<number | null>(null);
     const [isSearching, setIsSearching] = useState(false);
     const [searchError, setSearchError] = useState("");
     const [hasSearched, setHasSearched] = useState(false);
@@ -112,11 +113,13 @@ const AddRealizeVoucher: React.FC = () => {
             const byId = /^\d+$/.test(term);
             const { data } = byId
                 ? await getVoucherById(Number(term))
-                : await getVoucherByCode(term);
+                : await getVoucherByPartOfCode(term);
 
             const list: Voucher[] = Array.isArray(data) ? data : data ? [data] : [];
             setResults(list);
             setRedemptionInputs({});
+            // Pojedyncze trafienie wybieramy automatycznie; przy kilku użytkownik wybiera z listy.
+            setSelectedId(list.length === 1 ? list[0].id : null);
             if (list.length === 0) {
                 setSearchError("Nie znaleziono vouchera dla podanego kryterium.");
             }
@@ -127,6 +130,7 @@ const AddRealizeVoucher: React.FC = () => {
                     ? (err as { response?: { status?: number } }).response?.status
                     : undefined;
             setResults([]);
+            setSelectedId(null);
             setSearchError(
                 status === 404
                     ? "Nie znaleziono vouchera dla podanego kryterium."
@@ -377,8 +381,8 @@ const AddRealizeVoucher: React.FC = () => {
                             type="text"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            placeholder="Wpisz ID lub kod vouchera"
-                            aria-label="ID lub kod vouchera"
+                            placeholder="Wpisz fragment kodu lub ID"
+                            aria-label="Fragment kodu lub ID vouchera"
                         />
                         <button
                             type="submit"
@@ -400,8 +404,41 @@ const AddRealizeVoucher: React.FC = () => {
                         <p className="ar-empty">Brak wyników.</p>
                     )}
 
+                    {results.length > 1 && (
+                        <div className="ar-matches">
+                            <p className="ar-matches__title">
+                                Znaleziono {results.length} voucherów — wybierz właściwy:
+                            </p>
+                            <ul className="ar-matches__list">
+                                {results.map((voucher) => {
+                                    const realized = isVoucherRealized(voucher);
+                                    return (
+                                        <li key={voucher.id}>
+                                            <button
+                                                type="button"
+                                                className={`ar-match ${selectedId === voucher.id ? "is-active" : ""}`}
+                                                onClick={() => setSelectedId(voucher.id)}
+                                                aria-pressed={selectedId === voucher.id}
+                                            >
+                                                <span className="ar-code">{voucher.voucherCode}</span>
+                                                <span className="ar-match__meta">
+                                                    {formatCurrency(voucher.availableAmount)} · {voucher.place || "—"}
+                                                </span>
+                                                <span className={`ar-badge ${realized ? "ar-badge--muted" : "ar-badge--success"}`}>
+                                                    {realized ? "Zrealizowany" : "Aktywny"}
+                                                </span>
+                                            </button>
+                                        </li>
+                                    );
+                                })}
+                            </ul>
+                        </div>
+                    )}
+
                     <div className="ar-results">
-                        {results.map((voucher) => {
+                        {results
+                            .filter((voucher) => voucher.id === selectedId)
+                            .map((voucher) => {
                             const realized = isVoucherRealized(voucher);
                             const expired = isExpired(voucher.validUntil);
                             const busy = redeemingId === voucher.id;

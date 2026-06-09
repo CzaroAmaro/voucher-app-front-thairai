@@ -48,9 +48,6 @@ const IconReport = () => (
 const IconCalendar = () => (
     <svg {...iconProps}><rect x="3" y="4" width="18" height="17" rx="2" /><path d="M3 9h18M8 2v4M16 2v4" /></svg>
 );
-const IconLogin = () => (
-    <svg {...iconProps}><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" /><path d="m10 17 5-5-5-5" /><path d="M15 12H3" /></svg>
-);
 const IconSun = () => (
     <svg {...iconProps} width={18} height={18}><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4 12H2M22 12h-2M5 5l1.4 1.4M17.6 17.6 19 19M5 19l1.4-1.4M17.6 6.4 19 5" /></svg>
 );
@@ -114,14 +111,7 @@ const Navbar: React.FC<NavbarProps> = ({ toggleDarkMode, darkMode, isLoggedIn })
                 {links.map(renderLink)}
                 {!isLoggedIn && (
                     <li>
-                        <NavLink
-                            to="/login"
-                            title="Logowanie"
-                            className={({ isActive }) => `nav-link ${isActive ? "is-active" : ""}`}
-                        >
-                            <span className="nav-link__icon" aria-hidden><IconLogin /></span>
-                            <span className="nav-link__text">Logowanie</span>
-                        </NavLink>
+                       
                     </li>
                 )}
             </ul>
