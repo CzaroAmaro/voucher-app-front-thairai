@@ -136,6 +136,13 @@
 .rp-btn--ghost:hover {
     border-color: var(--rp-accent);
 }
+.rp-btn--danger {
+    color: #fff;
+    background: var(--rp-danger);
+}
+.rp-btn--danger:not(:disabled):hover {
+    background: color-mix(in srgb, var(--rp-danger) 85%, #000);
+}
 
 /* ---------- Komunikaty ---------- */
 .rp-message {
@@ -237,8 +244,21 @@
 /* ---------- Akcje ---------- */
 .rp-actions {
     display: flex;
-    justify-content: flex-end;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    flex-wrap: wrap;
     margin-top: 22px;
+}
+.rp-actions__danger {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+.rp-actions__danger select {
+    width: auto;
+    min-width: 190px;
 }
 
 @media (max-width: 600px) {

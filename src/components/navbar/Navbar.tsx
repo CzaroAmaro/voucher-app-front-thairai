@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import "./Navbar.css";
 
 interface NavbarProps {
     toggleDarkMode: () => void;
     darkMode: boolean;
     isLoggedIn: boolean;
+    onLogout: () => void;
 }
 
 interface NavItem {
@@ -54,6 +55,9 @@ const IconSun = () => (
 const IconMoon = () => (
     <svg {...iconProps} width={18} height={18}><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z" /></svg>
 );
+const IconLogout = () => (
+    <svg {...iconProps}><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><path d="M16 17l5-5-5-5" /><path d="M21 12H9" /></svg>
+);
 
 const PUBLIC_LINKS: NavItem[] = [
     { to: "/add-realize", label: "Dodaj i Realizuj", icon: <IconPlusCircle /> },
@@ -68,10 +72,16 @@ const PRIVATE_LINKS: NavItem[] = [
     { to: "/date-range", label: "Przegląd", icon: <IconCalendar /> },
 ];
 
-const Navbar: React.FC<NavbarProps> = ({ toggleDarkMode, darkMode, isLoggedIn }) => {
+const Navbar: React.FC<NavbarProps> = ({ toggleDarkMode, darkMode, isLoggedIn, onLogout }) => {
     const [isCollapsed, setIsCollapsed] = useState(false);
+    const navigate = useNavigate();
 
     const links = isLoggedIn ? PRIVATE_LINKS : PUBLIC_LINKS;
+
+    const handleLogout = () => {
+        onLogout();
+        navigate("/add-realize");
+    };
 
     const renderLink = ({ to, label, icon, end }: NavItem) => (
         <li key={to}>
@@ -129,6 +139,18 @@ const Navbar: React.FC<NavbarProps> = ({ toggleDarkMode, darkMode, isLoggedIn })
                 </span>
                 <span className="nav-link__text">{darkMode ? "Tryb ciemny" : "Tryb jasny"}</span>
             </button>
+
+            {isLoggedIn && (
+                <button
+                    type="button"
+                    className="nav-logout"
+                    onClick={handleLogout}
+                    title="Wyloguj"
+                >
+                    <span className="nav-link__icon" aria-hidden><IconLogout /></span>
+                    <span className="nav-link__text">Wyloguj</span>
+                </button>
+            )}
         </nav>
     );
 };

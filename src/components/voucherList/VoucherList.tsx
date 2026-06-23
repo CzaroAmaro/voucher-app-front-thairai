@@ -4,43 +4,30 @@ import { getVouchers, getVoucherById, getVoucherByPartOfCode } from "../../servi
 import { Voucher } from "../../models/Voucher";
 import VoucherSort from "../VoucherSort/VoucherSort";
 import VoucherModal from "../VoucherModal/VoucherModal";
+import TablePager from "../TablePager/TablePager";
 import { formatCurrency, formatDate, isExpired, isVoucherRealized } from "../../utils/voucher";
+import { ColumnType, PAGE_SIZES, SortDirection, compareByType } from "../../utils/table";
 
-type SortDirection = "asc" | "desc";
 type StatusFilter = "all" | "realized" | "notRealized";
 
 const PLACES = ["Ostrołęka", "Ostrołęka-2", "Mława"] as const;
 const PAYMENT_METHODS = ["Blik", "Gotówka"] as const;
-const PAGE_SIZES = [50, 100, 200] as const;
 
-const NUMERIC_COLUMNS = new Set<keyof Voucher>(["id", "amount", "availableAmount"]);
-const DATE_COLUMNS = new Set<keyof Voucher>(["saleDate", "realizedDate", "validUntil"]);
+const COLUMNS: { column: keyof Voucher; label: string; type: ColumnType }[] = [
+    { column: "id", label: "ID", type: "number" },
+    { column: "voucherCode", label: "Kod vouchera", type: "text" },
+    { column: "saleDate", label: "Data sprzedaży", type: "date" },
+    { column: "paymentMethod", label: "Metoda płatności", type: "text" },
+    { column: "amount", label: "Kwota", type: "number" },
+    { column: "realized", label: "Status", type: "text" },
+    { column: "realizedDate", label: "Data realizacji", type: "date" },
+    { column: "availableAmount", label: "Pozostała kwota", type: "number" },
+    { column: "validUntil", label: "Ważny do", type: "date" },
+    { column: "place", label: "Miejsce", type: "text" },
+    { column: "note", label: "Notatka", type: "text" },
+];
 
-const compareVouchers = (
-    a: Voucher,
-    b: Voucher,
-    column: keyof Voucher,
-    direction: SortDirection
-): number => {
-    const av = a[column];
-    const bv = b[column];
-
-    const aEmpty = av === null || av === undefined || av === "";
-    const bEmpty = bv === null || bv === undefined || bv === "";
-    if (aEmpty && bEmpty) return 0;
-    if (aEmpty) return 1; // puste zawsze na końcu, niezależnie od kierunku
-    if (bEmpty) return -1;
-
-    let result: number;
-    if (NUMERIC_COLUMNS.has(column)) {
-        result = Number(av) - Number(bv);
-    } else if (DATE_COLUMNS.has(column)) {
-        result = new Date(av as string).getTime() - new Date(bv as string).getTime();
-    } else {
-        result = String(av).localeCompare(String(bv), "pl");
-    }
-    return direction === "asc" ? result : -result;
-};
+const COLUMN_TYPE = new Map(COLUMNS.map((c) => [c.column, c.type]));
 
 const VouchersList: React.FC = () => {
     const [allVouchers, setAllVouchers] = useState<Voucher[]>([]);
@@ -100,10 +87,12 @@ const VouchersList: React.FC = () => {
         });
     }, [allVouchers, statusFilter, placeFilter, paymentFilter, dateFrom, dateTo]);
 
-    const sortedVouchers = useMemo(
-        () => [...filteredVouchers].sort((a, b) => compareVouchers(a, b, sortColumn, sortDirection)),
-        [filteredVouchers, sortColumn, sortDirection]
-    );
+    const sortedVouchers = useMemo(() => {
+        const type = COLUMN_TYPE.get(sortColumn) ?? "text";
+        return [...filteredVouchers].sort((a, b) =>
+            compareByType(a[sortColumn], b[sortColumn], type, sortDirection)
+        );
+    }, [filteredVouchers, sortColumn, sortDirection]);
 
     const totalPages = Math.max(1, Math.ceil(sortedVouchers.length / pageSize));
 
@@ -178,20 +167,6 @@ const VouchersList: React.FC = () => {
         setAllVouchers((prev) => prev.filter((v) => v.id !== id));
     };
 
-    const columns: { column: keyof Voucher; label: string }[] = [
-        { column: "id", label: "ID" },
-        { column: "voucherCode", label: "Kod vouchera" },
-        { column: "saleDate", label: "Data sprzedaży" },
-        { column: "paymentMethod", label: "Metoda płatności" },
-        { column: "amount", label: "Kwota" },
-        { column: "realized", label: "Status" },
-        { column: "realizedDate", label: "Data realizacji" },
-        { column: "availableAmount", label: "Pozostała kwota" },
-        { column: "validUntil", label: "Ważny do" },
-        { column: "place", label: "Miejsce" },
-        { column: "note", label: "Notatka" },
-    ];
-
     return (
         <div className="vl-page">
             <header className="vl-header">
@@ -265,7 +240,7 @@ const VouchersList: React.FC = () => {
                     <table className="vl-table">
                         <thead>
                         <tr>
-                            {columns.map(({ column, label }) => (
+                            {COLUMNS.map(({ column, label }) => (
                                 <VoucherSort
                                     key={column}
                                     column={column}
@@ -280,11 +255,11 @@ const VouchersList: React.FC = () => {
                         <tbody>
                         {loading ? (
                             <tr>
-                                <td colSpan={columns.length} className="vl-state">Ładowanie danych…</td>
+                                <td colSpan={COLUMNS.length} className="vl-state">Ładowanie danych…</td>
                             </tr>
                         ) : currentVouchers.length === 0 ? (
                             <tr>
-                                <td colSpan={columns.length} className="vl-state">Brak voucherów spełniających kryteria.</td>
+                                <td colSpan={COLUMNS.length} className="vl-state">Brak voucherów spełniających kryteria.</td>
                             </tr>
                         ) : (
                             currentVouchers.map((voucher) => {
@@ -326,35 +301,14 @@ const VouchersList: React.FC = () => {
                     </table>
                 </div>
 
-                <div className="vl-pagination">
-                    <div className="vl-field vl-field--inline">
-                        <label htmlFor="vl-pagesize">Na stronę</label>
-                        <select id="vl-pagesize" value={pageSize} onChange={(e) => setPageSize(Number(e.target.value))}>
-                            {PAGE_SIZES.map((size) => (
-                                <option key={size} value={size}>{size}</option>
-                            ))}
-                        </select>
-                    </div>
-                    <div className="vl-pager">
-                        <button
-                            type="button"
-                            className="vl-btn"
-                            onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
-                            disabled={currentPage === 1}
-                        >
-                            Poprzednia
-                        </button>
-                        <span className="vl-pager__info">Strona {currentPage} z {totalPages}</span>
-                        <button
-                            type="button"
-                            className="vl-btn"
-                            onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
-                            disabled={currentPage === totalPages}
-                        >
-                            Następna
-                        </button>
-                    </div>
-                </div>
+                <TablePager
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    pageSize={pageSize}
+                    pageSizes={PAGE_SIZES}
+                    onPageChange={setCurrentPage}
+                    onPageSizeChange={setPageSize}
+                />
             </div>
 
             {selectedVoucher && (

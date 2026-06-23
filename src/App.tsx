@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import VoucherList from "./components/voucherList/VoucherList.tsx";
 import Navbar from "./components/navbar/Navbar.tsx";
-import AddVoucher from "./components/AddVoucher/AddVoucher.tsx";
 import DeletedVoucher from "./components/DeletedVoucher/DeletedVoucher.tsx";
 import NotificationList from "./components/NotificationList/NotificationList.tsx";
 import Reports from "./components/Reports/Reports.tsx";
@@ -30,22 +29,29 @@ const App: React.FC = () => {
         <BrowserRouter>
             <div className="app-container" data-theme={darkMode ? "dark" : "light"}>
                 <aside className="sidebar">
-                    <Navbar toggleDarkMode={toggleDarkMode} darkMode={darkMode} isLoggedIn={isLoggedIn} />
+                    <Navbar
+                        toggleDarkMode={toggleDarkMode}
+                        darkMode={darkMode}
+                        isLoggedIn={isLoggedIn}
+                        onLogout={() => setIsLoggedIn(false)}
+                    />
                 </aside>
                 <main className="main-content">
                     <Routes>
                         <Route path="/add-realize" element={<AddRealizeVoucher/>} />
                         <Route path="/login" element={<Login onLogin={() => setIsLoggedIn(true)} />} />
 
-                        {isLoggedIn && (
+                        {isLoggedIn ? (
                             <>
                                 <Route path="/" element={<VoucherList />} />
-                                <Route path="/add" element={<AddVoucher />} />
+                                <Route path="/add" element={<AddRealizeVoucher />} />
                                 <Route path="/deleted" element={<DeletedVoucher />} />
                                 <Route path="/sent" element={<NotificationList />} />
                                 <Route path="/report" element={<Reports />} />
                                 <Route path="/date-range" element={<VoucherDateRange />} />
                             </>
+                        ) : (
+                            <Route path="/" element={<Navigate to="/add-realize" replace />} />
                         )}
                     </Routes>
                 </main>

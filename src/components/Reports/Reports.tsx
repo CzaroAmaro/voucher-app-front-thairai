@@ -1,11 +1,22 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { getReport, generateReportList } from "../../services/reportService";
-import { getVoucherByMonthAndYear, getVoucherRealizedByMonthAndYear } from "../../services/voucherService";
+import {
+    getVoucherByMonthAndYear,
+    getVoucherRealizedByMonthAndYear,
+    deleteVoucher,
+} from "../../services/voucherService";
 import { Voucher } from "../../models/Voucher";
 import { formatCurrency, formatDate } from "../../utils/voucher";
 import "./Reports.css";
 
 type Mode = "monthly" | "custom";
+
+const DELETE_REASONS = [
+    "wystawiony omyłkowo",
+    "niepoprawna kwota",
+    "duplikat",
+    "anulowana transakcja",
+] as const;
 
 const CURRENT_YEAR = new Date().getFullYear();
 const MONTHS = Array.from({ length: 12 }, (_, i) => ({
@@ -42,6 +53,10 @@ const Reports: React.FC = () => {
     const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
     const [fetching, setFetching] = useState(false);
     const [loadedPeriod, setLoadedPeriod] = useState<{ month: number; year: number } | null>(null);
+
+    // Usuwanie zaznaczonych (przeniesienie do "usuniętych")
+    const [deleting, setDeleting] = useState(false);
+    const [deleteReason, setDeleteReason] = useState("");
 
     // Zmiana okresu unieważnia wcześniej pobraną listę (eliminuje rozjazd miesiąc/zaznaczenie).
     useEffect(() => {
@@ -124,6 +139,52 @@ const Reports: React.FC = () => {
             setError("Nie udało się wygenerować raportu.");
         } finally {
             setGenerating(false);
+        }
+    };
+
+    const handleDeleteSelected = async () => {
+        setError("");
+        setMessage("");
+        if (selectedIds.size === 0) {
+            setError("Zaznacz przynajmniej jeden voucher.");
+            return;
+        }
+        const reason = deleteReason.trim();
+        if (!reason) {
+            setError("Wybierz powód usunięcia zaznaczonych voucherów.");
+            return;
+        }
+        if (!window.confirm(`Przenieść ${selectedIds.size} zaznaczonych voucherów do usuniętych?`)) return;
+
+        setDeleting(true);
+        try {
+            const ids = [...selectedIds];
+            const results = await Promise.allSettled(ids.map((id) => deleteVoucher(id, reason)));
+            const removed = new Set(
+                ids.filter((_, i) => results[i].status === "fulfilled")
+            );
+            const failed = ids.length - removed.size;
+
+            // Usuń przeniesione vouchery z list i zaznaczenia.
+            setIssued((prev) => prev.filter((v) => !removed.has(v.id)));
+            setRealized((prev) => prev.filter((v) => !removed.has(v.id)));
+            setSelectedIds((prev) => {
+                const next = new Set(prev);
+                removed.forEach((id) => next.delete(id));
+                return next;
+            });
+
+            if (removed.size > 0) {
+                setMessage(`Przeniesiono ${removed.size} voucherów do usuniętych.`);
+            }
+            if (failed > 0) {
+                setError(`Nie udało się usunąć ${failed} z ${ids.length} voucherów.`);
+            }
+        } catch (err) {
+            console.error("Błąd przy usuwaniu voucherów:", err);
+            setError("Nie udało się usunąć zaznaczonych voucherów.");
+        } finally {
+            setDeleting(false);
         }
     };
 
@@ -266,11 +327,34 @@ const Reports: React.FC = () => {
                                 {renderVoucherGroup("Vouchery sprzedane", issued)}
                                 {renderVoucherGroup("Vouchery zrealizowane", realized)}
                                 <div className="rp-actions">
+                                    <div className="rp-actions__danger">
+                                        <select
+                                            aria-label="Powód usunięcia zaznaczonych"
+                                            value={deleteReason}
+                                            onChange={(e) => setDeleteReason(e.target.value)}
+                                            disabled={deleting || selectedIds.size === 0}
+                                        >
+                                            <option value="">Powód usunięcia…</option>
+                                            {DELETE_REASONS.map((r) => (
+                                                <option key={r} value={r}>
+                                                    {r.charAt(0).toUpperCase() + r.slice(1)}
+                                                </option>
+                                            ))}
+                                        </select>
+                                        <button
+                                            type="button"
+                                            className="rp-btn rp-btn--danger"
+                                            onClick={handleDeleteSelected}
+                                            disabled={deleting || generating || selectedIds.size === 0}
+                                        >
+                                            {deleting ? "Usuwam…" : "Usuń zaznaczone"}
+                                        </button>
+                                    </div>
                                     <button
                                         type="button"
                                         className="rp-btn rp-btn--primary"
                                         onClick={handleCustomReport}
-                                        disabled={generating || selectedIds.size === 0}
+                                        disabled={generating || deleting || selectedIds.size === 0}
                                     >
                                         {generating ? "Generuję…" : "Generuj raport z zaznaczonych"}
                                     </button>

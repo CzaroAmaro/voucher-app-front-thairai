@@ -192,3 +192,32 @@
 .navbar.collapsed .nav-theme__track {
     margin: 0;
 }
+
+/* ---------- Wyloguj ---------- */
+.nav-logout {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    margin-top: 8px;
+    padding: 10px 12px;
+    border: 1px solid var(--nav-border);
+    border-radius: 12px;
+    background: transparent;
+    color: var(--nav-muted);
+    font: inherit;
+    font-weight: 500;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background-color 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+}
+.nav-logout:hover {
+    background: color-mix(in srgb, #dc2626 12%, transparent);
+    border-color: color-mix(in srgb, #dc2626 40%, transparent);
+    color: #dc2626;
+}
+
+.navbar.collapsed .nav-logout {
+    justify-content: center;
+    padding: 10px;
+}

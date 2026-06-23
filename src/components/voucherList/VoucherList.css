@@ -332,7 +332,7 @@
     background: color-mix(in srgb, var(--primary-text-color) 10%, transparent);
 }
 
-/* ---------- Paginacja ---------- */
+/* ---------- Paginacja (współdzielona z TablePager) ---------- */
 .vl-pagination {
     display: flex;
     align-items: center;
